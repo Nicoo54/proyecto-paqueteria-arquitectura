@@ -1,0 +1,290 @@
+// Prisma schema — Packeteer
+// Basado en E3 (db/modelo_datos.sql) con ajustes documentados:
+//  · Transportista: estado (DISPONIBLE / NO_DISPONIBLE / OCUPADO) y campos
+//    de tracking GPS (ultima_lat, ultima_lng, ultima_actualizacion).
+//  · Transaccion: campos de auditoría de liquidación.
+//  · Envio: enum de estado coherente con openapi.yaml (BUSCANDO, ACEPTADO,
+//    RETIRADO, EN_CAMINO, ENTREGADO, CANCELADO).
+//  · Vehiculo.id_transportista: relación 1-1 con Transportista (un vehículo
+//    por transportista; coincide con openapi y con RN del E1).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ────────────────────────────────────────────────── Enums ──────────────────────────────────────────────────
+
+enum EstadoTransportista {
+  NO_DISPONIBLE
+  DISPONIBLE
+  OCUPADO
+}
+
+enum EstadoEnvio {
+  BUSCANDO
+  ACEPTADO
+  RETIRADO
+  EN_CAMINO
+  ENTREGADO
+  CANCELADO
+}
+
+enum EstadoPago {
+  RETENIDO
+  LIBERADO
+  LIQUIDADO
+  REVISION_MANUAL
+}
+
+enum EstadoTicket {
+  ABIERTO
+  EN_ATENCION
+  RESUELTO
+  CERRADO
+}
+
+enum CategoriaVehiculoEnum {
+  BICI
+  MOTO
+  AUTO
+}
+
+enum CategoriaPaqueteEnum {
+  S
+  M
+  L
+}
+
+enum TipoPago {
+  DIGITAL
+  EFECTIVO
+}
+
+// ────────────────────────────────────────────────── Usuarios ──────────────────────────────────────────────────
+
+model Usuario {
+  dni       String   @id @db.VarChar(10)
+  clerkId   String   @unique @map("clerk_id") @db.VarChar(50)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  remitente      Remitente?
+  transportista  Transportista?
+  helper         Helper?
+
+  @@map("usuario")
+}
+
+model Remitente {
+  dni String @id @db.VarChar(10)
+
+  usuario     Usuario     @relation(fields: [dni], references: [dni], onDelete: Cascade)
+  direcciones Direccion[]
+  envios      Envio[]
+
+  @@map("remitente")
+}
+
+model Helper {
+  dni String @id @db.VarChar(10)
+
+  usuario Usuario  @relation(fields: [dni], references: [dni], onDelete: Cascade)
+  tickets Ticket[]
+
+  @@map("helper")
+}
+
+model Transportista {
+  dni                    String              @id @db.VarChar(10)
+  aliasBancario          String              @map("alias_bancario") @db.VarChar(100)
+  cantidadResenas        Int                 @default(0) @map("cantidad_resenas")
+  promedioCalificacion   Decimal             @default(0.00) @map("promedio_calificacion") @db.Decimal(3, 2)
+  estado                 EstadoTransportista @default(NO_DISPONIBLE)
+
+  ultimaLat              Decimal?            @map("ultima_lat") @db.Decimal(10, 8)
+  ultimaLng              Decimal?            @map("ultima_lng") @db.Decimal(10, 8)
+  ultimaActualizacion    DateTime?           @map("ultima_actualizacion")
+
+  usuario  Usuario   @relation(fields: [dni], references: [dni], onDelete: Cascade)
+  vehiculo Vehiculo?
+  envios   Envio[]
+
+  @@map("transportista")
+}
+
+// ────────────────────────────────────────────────── Vehículo ──────────────────────────────────────────────────
+
+model CategoriaVehiculo {
+  nombre           CategoriaVehiculoEnum @id @map("nombre_categoria")
+  capacidadMaxima  Decimal               @map("capacidad_maxima") @db.Decimal(10, 2)
+
+  vehiculos Vehiculo[]
+
+  @@map("categoria_vehiculo")
+}
+
+model Vehiculo {
+  id              Int                   @id @default(autoincrement())
+  categoriaId     CategoriaVehiculoEnum @map("categoria_id")
+  patente         String?               @unique @db.VarChar(10)
+  transportistaDni String               @unique @map("transportista_dni") @db.VarChar(10)
+  updatedAt       DateTime              @default(now()) @updatedAt @map("updated_at")
+
+  categoria     CategoriaVehiculo @relation(fields: [categoriaId], references: [nombre])
+  transportista Transportista     @relation(fields: [transportistaDni], references: [dni], onDelete: Cascade)
+
+  @@map("vehiculo")
+}
+
+// ────────────────────────────────────────────────── Paquete ──────────────────────────────────────────────────
+
+model CategoriaPaquete {
+  categoria           CategoriaPaqueteEnum @id @map("categoria_paquete")
+  pesoMaximo          Decimal              @map("peso_maximo") @db.Decimal(10, 2)
+  multiplicadorCosto  Decimal              @map("multiplicador_costo") @db.Decimal(10, 2)
+
+  envios Envio[]
+
+  @@map("categoria_paquete")
+}
+
+// ────────────────────────────────────────────────── Direcciones ──────────────────────────────────────────────────
+
+model Direccion {
+  id            Int      @id @default(autoincrement()) @map("id_direccion")
+  remitenteDni  String   @map("remitente_dni") @db.VarChar(10)
+  direccion     String   @db.VarChar(255)
+  ciudad        String?  @db.VarChar(100)
+  provincia     String?  @db.VarChar(100)
+  pais          String?  @db.VarChar(100)
+  codigoPostal  String?  @map("codigo_postal") @db.VarChar(20)
+  origenLat     Decimal  @map("origen_lat") @db.Decimal(10, 8)
+  origenLng     Decimal  @map("origen_lng") @db.Decimal(10, 8)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+
+  remitente Remitente @relation(fields: [remitenteDni], references: [dni], onDelete: Cascade)
+
+  @@map("direccion")
+}
+
+// ────────────────────────────────────────────────── Zona Caliente ──────────────────────────────────────────────────
+
+model ZonaCaliente {
+  codigo                Int      @id @default(autoincrement()) @map("codigo_zona_caliente")
+  centroLat             Decimal  @map("centro_lat") @db.Decimal(10, 8)
+  centroLng             Decimal  @map("centro_lng") @db.Decimal(10, 8)
+  radioM                Decimal  @map("radio_m") @db.Decimal(10, 2)
+  multiplicadorPrecio   Decimal  @map("multiplicador_precio") @db.Decimal(10, 2)
+  fechaVigenciaInicio   DateTime @map("fecha_vigencia_inicio") @db.Date
+  fechaVigenciaFin      DateTime @map("fecha_vigencia_fin") @db.Date
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  envios Envio[]
+
+  @@map("zona_caliente")
+}
+
+// ────────────────────────────────────────────────── Envío ──────────────────────────────────────────────────
+
+model Envio {
+  id                   Int                  @id @default(autoincrement()) @map("codigo_envio")
+  categoriaPaquete     CategoriaPaqueteEnum @map("categoria_paquete")
+  remitenteDni         String               @map("dni_remitente") @db.VarChar(10)
+  transportistaDni     String?              @map("dni_transportista") @db.VarChar(10)
+  zonaCalienteId       Int?                 @map("codigo_zona_caliente")
+  origenDireccion      String               @map("origen_direccion") @db.VarChar(255)
+  origenLat            Decimal              @map("origen_lat") @db.Decimal(10, 8)
+  origenLng            Decimal              @map("origen_lng") @db.Decimal(10, 8)
+  destinoDireccion     String               @map("destino_direccion") @db.VarChar(255)
+  destinoLat           Decimal              @map("destino_lat") @db.Decimal(10, 8)
+  destinoLng           Decimal              @map("destino_lng") @db.Decimal(10, 8)
+  condicionClimatica   String               @map("condicion_climatica") @db.VarChar(50)
+  estado               EstadoEnvio          @default(BUSCANDO)
+  costo                Decimal              @db.Decimal(10, 2)
+  tipoPago             TipoPago             @map("tipo_pago")
+  createdAt            DateTime             @default(now()) @map("created_at")
+  updatedAt            DateTime             @default(now()) @updatedAt @map("updated_at")
+
+  categoria     CategoriaPaquete @relation(fields: [categoriaPaquete], references: [categoria])
+  remitente     Remitente        @relation(fields: [remitenteDni], references: [dni])
+  transportista Transportista?   @relation(fields: [transportistaDni], references: [dni])
+  zonaCaliente  ZonaCaliente?    @relation(fields: [zonaCalienteId], references: [codigo])
+  resena        Resena?
+  transaccion   Transaccion?
+  tickets       Ticket[]
+
+  @@index([estado])
+  @@index([transportistaDni])
+  @@index([remitenteDni])
+  @@map("envio")
+}
+
+// ────────────────────────────────────────────────── Reseña ──────────────────────────────────────────────────
+
+model Resena {
+  id          Int      @id @default(autoincrement()) @map("id_resena")
+  envioId     Int      @unique @map("codigo_envio")
+  puntaje     Int      @db.SmallInt
+  comentario  String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  envio Envio @relation(fields: [envioId], references: [id])
+
+  @@map("resena")
+}
+
+// ────────────────────────────────────────────────── Transacción ──────────────────────────────────────────────────
+
+model Transaccion {
+  idReferenciaExterna       String     @id @map("id_referencia_externa") @db.VarChar(50)
+  envioId                   Int        @unique @map("codigo_envio")
+  montoTotal                Decimal    @map("monto_total") @db.Decimal(10, 2)
+  estadoPago                EstadoPago @default(RETENIDO) @map("estado_pago")
+
+  fechaLiquidacion          DateTime?  @map("fecha_liquidacion")
+  montoComisionPlataforma   Decimal?   @map("monto_comision_plataforma") @db.Decimal(10, 2)
+  montoTransportista        Decimal?   @map("monto_transportista") @db.Decimal(10, 2)
+  idTransferenciaExterna    String?    @map("id_transferencia_externa") @db.VarChar(100)
+
+  createdAt                 DateTime   @default(now()) @map("created_at")
+  updatedAt                 DateTime   @default(now()) @updatedAt @map("updated_at")
+
+  envio Envio @relation(fields: [envioId], references: [id])
+
+  @@index([estadoPago])
+  @@map("transaccion")
+}
+
+// ────────────────────────────────────────────────── Ticket ──────────────────────────────────────────────────
+
+model Ticket {
+  id          Int          @id @default(autoincrement()) @map("codigo_reclamo")
+  envioId     Int          @map("codigo_envio")
+  helperDni   String?      @map("dni_soporte_tecnico") @db.VarChar(10)
+  motivo      String
+  resolucion  String?
+  estado      EstadoTicket @default(ABIERTO)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at")
+
+  envio  Envio   @relation(fields: [envioId], references: [id])
+  helper Helper? @relation(fields: [helperDni], references: [dni])
+
+  @@map("ticket")
+}
+
+// ────────────────────────────────────────────────── Métricas ──────────────────────────────────────────────────
+
+model Metrica {
+  fechaReporte             DateTime @id @map("fecha_reporte") @db.Date
+  cantidadEnviosTotales    Int      @map("cantidad_envios_totales")
+  gananciaNetaPlataforma   Decimal  @map("ganancia_neta_plataforma") @db.Decimal(10, 2)
+
+  @@map("metrica")
+}
