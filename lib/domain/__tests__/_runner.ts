@@ -1,4 +1,4 @@
-type Caso = { nombre: string; ejecutar: () => void };
+type Caso = { nombre: string; ejecutar: () => void | Promise<void> };
 const casos: Caso[] = [];
 
 export function describe(nombre: string, fn: () => void): void {
@@ -13,7 +13,7 @@ export function describe(nombre: string, fn: () => void): void {
 
 const describeStack: string[] = [];
 
-export function it(nombre: string, fn: () => void): void {
+export function it(nombre: string, fn: () => void | Promise<void>): void {
   const prefijo = describeStack[describeStack.length - 1] ?? "";
   casos.push({ nombre: prefijo ? `${prefijo} > ${nombre}` : nombre, ejecutar: fn });
 }
