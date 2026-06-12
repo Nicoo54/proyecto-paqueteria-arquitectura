@@ -1,7 +1,6 @@
 import SiteBrand from "@/components/SiteBrand";
 import { UserButton } from "@clerk/nextjs";
-import { Clock, HelpCircle, Package } from "lucide-react";
-import Link from "next/link";
+import HeaderAction from "./HeaderAction";
 
 export default function ClienteHeader() {
   return (
@@ -10,15 +9,7 @@ export default function ClienteHeader() {
         <SiteBrand />
 
         <div className="flex items-center gap-8">
-          <nav className="hidden md:flex items-center gap-6">
-            <IconLink href="/cliente" icon={Package} text="Inicio" />
-            <IconLink href="/cliente/historial" icon={Clock} text="Historial" />
-            <IconLink
-              href="/cliente/soporte"
-              icon={HelpCircle}
-              text="Soporte"
-            />
-          </nav>
+          <HeaderAction />
 
           <UserButton
             appearance={{
@@ -30,24 +21,5 @@ export default function ClienteHeader() {
         </div>
       </div>
     </header>
-  );
-}
-
-function IconLink({
-  href,
-  icon: Icon,
-  text,
-}: {
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  text: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="text-sm font-medium text-slate-600 hover:text-slate-900 flex items-center gap-2 transition-colors"
-    >
-      <Icon className="w-4 h-4" /> {text}
-    </Link>
   );
 }
