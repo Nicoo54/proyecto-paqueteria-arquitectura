@@ -1,7 +1,7 @@
 import { Show, SignInButton, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import SiteBrand from "./SiteBrand";
+import SiteBrand from "../SiteBrand";
 
 export default function LandingHeader() {
   return (
