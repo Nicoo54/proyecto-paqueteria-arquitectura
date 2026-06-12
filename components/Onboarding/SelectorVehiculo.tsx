@@ -1,0 +1,79 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Label } from "@/components/ui/label";
+import {
+  CATEGORIAS_VEHICULOS,
+  CategoriaVehiculo,
+} from "@/lib/onboardingContent";
+
+// TODO: Cambiar a fetch a API real
+const fetchCategoriasVehiculos = async () => {
+  return new Promise<readonly CategoriaVehiculo[]>((resolve) => {
+    setTimeout(() => {
+      resolve(CATEGORIAS_VEHICULOS);
+    }, 1500);
+  });
+};
+
+interface Props {
+  categoriaSeleccionada: string;
+  onChange: (id: string) => void;
+  limpiarError: () => void;
+}
+
+export default function SelectorVehiculo({
+  categoriaSeleccionada,
+  onChange,
+  limpiarError,
+}: Props) {
+  const [categoriasApi, setCategoriasApi] = useState<
+    readonly CategoriaVehiculo[]
+  >([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchCategoriasVehiculos().then((data) => {
+      setCategoriasApi(data);
+      if (!categoriaSeleccionada) {
+        onChange(data[0]?.id);
+      }
+      setIsLoading(false);
+    });
+  }, [categoriaSeleccionada, onChange]);
+
+  return (
+    <div className="space-y-3 pt-2">
+      <Label className="text-sm font-semibold text-slate-900">
+        ¿Qué vehículo usás?
+      </Label>
+
+      {isLoading ? (
+        <div className="flex items-center justify-center py-6 border-2 border-dashed border-slate-100 rounded-xl">
+          <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-3">
+          {categoriasApi.map((veh) => (
+            <button
+              key={veh.id}
+              type="button"
+              onClick={() => {
+                onChange(veh.id);
+                limpiarError();
+              }}
+              className={`py-3 px-2 rounded-xl text-sm font-semibold transition-all border-2 flex flex-col items-center gap-1 ${
+                categoriaSeleccionada === veh.id
+                  ? "border-slate-900 bg-slate-900 text-white"
+                  : "border-slate-100 bg-white text-slate-600 hover:border-slate-300"
+              }`}
+            >
+              <span className="text-xl">{veh.icon}</span>
+              {veh.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
