@@ -9,7 +9,6 @@ export default function RemitenteLayout({
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <ClienteHeader />
 
-      {/* CONTENIDO DE LAS PÁGINAS */}
       <main className="flex-1 w-full max-w-5xl mx-auto p-6">{children}</main>
     </div>
   );

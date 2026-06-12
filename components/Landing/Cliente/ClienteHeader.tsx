@@ -1,6 +1,7 @@
 import SiteBrand from "@/components/SiteBrand";
-import { UserButton } from "@clerk/nextjs";
+import { ClerkLoaded, ClerkLoading, UserButton } from "@clerk/nextjs";
 import HeaderAction from "./HeaderAction";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ClienteHeader() {
   return (
@@ -11,13 +12,21 @@ export default function ClienteHeader() {
         <div className="flex items-center gap-8">
           <HeaderAction />
 
-          <UserButton
-            appearance={{
-              elements: {
-                userButtonAvatarBox: "w-9 h-9 border border-slate-200",
-              },
-            }}
-          />
+          <div className="relative w-9 h-9 flex items-center justify-center">
+            <ClerkLoading>
+              <Skeleton className="w-full h-full rounded-full bg-slate-200 border border-slate-200 animate-pulse" />
+            </ClerkLoading>
+
+            <ClerkLoaded>
+              <UserButton
+                appearance={{
+                  elements: {
+                    userButtonAvatarBox: "w-9 h-9 border border-slate-200",
+                  },
+                }}
+              />
+            </ClerkLoaded>
+          </div>
         </div>
       </div>
     </header>
