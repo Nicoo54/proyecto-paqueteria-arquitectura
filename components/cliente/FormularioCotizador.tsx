@@ -109,7 +109,6 @@ export default function FormularioCotizador({
         <div className="relative">
           <div className="absolute left-3.25 top-8 bottom-8 w-0.5 bg-slate-200 z-0"></div>
 
-          {/* ORIGEN */}
           <div className="relative z-50 space-y-1 mb-3">
             <Label className="text-slate-900 text-sm font-bold flex items-center gap-2">
               <div className="w-7 h-7 rounded-full bg-slate-900 flex items-center justify-center text-white text-xs shadow-sm">
