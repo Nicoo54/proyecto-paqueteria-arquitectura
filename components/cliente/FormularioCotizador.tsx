@@ -86,7 +86,7 @@ export default function FormularioCotizador({
   };
 
   return (
-    <div className="w-full lg:w-112.5 xl:w-125 h-full bg-white border-r border-slate-200 p-6 flex flex-col shadow-xl z-10 overflow-y-auto">
+    <div className="w-full lg:w-112.5 xl:w-125 h-full bg-white border-r border-slate-200 p-6 flex flex-col shadow-xl z-10 overflow-y-hidden lg:overflow-y-auto xl:overflow-y-hidden">
       <style>{`
         mapbox-search-box { width: 100% !important; }
         mapbox-search-box::part(input):focus {
@@ -203,55 +203,57 @@ export default function FormularioCotizador({
           </Suspense>
         </div>
 
-        <div className="flex-1 min-h-4" />
+        <div className="flex-1 min-h-0" />
 
         {/* COTIZACION */}
-        {!cotizacion ? (
-          <Button
-            type="submit"
-            disabled={isCotizando || !origen || !destino}
-            className="w-full h-12 text-base font-bold bg-amber-400 text-slate-900 hover:bg-amber-500 rounded-xl shadow-sm"
-          >
-            {isCotizando ? "Calculando ruta..." : "Cotizar Envío"}
-          </Button>
-        ) : (
-          <div className="animate-in slide-in-from-bottom-4 fade-in duration-300 pb-2">
-            <Card className="border-slate-900 bg-slate-900 text-white shadow-xl overflow-hidden rounded-2xl">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <p className="text-amber-400 font-bold text-xs uppercase tracking-wider mb-1">
-                      Tarifa Final
-                    </p>
-                    <div className="flex items-end gap-1">
-                      <span className="text-3xl font-black">
-                        ${cotizacion.precio}
-                      </span>
-                      <span className="text-slate-400 text-sm mb-1 font-medium">
-                        ARS
-                      </span>
+        <div className="mt-auto pt-2 pb-4">
+          {!cotizacion ? (
+            <Button
+              type="submit"
+              disabled={isCotizando || !origen || !destino}
+              className="w-full h-12 text-base font-bold bg-amber-400 text-slate-900 hover:bg-amber-500 rounded-xl shadow-sm"
+            >
+              {isCotizando ? "Calculando ruta..." : "Cotizar Envío"}
+            </Button>
+          ) : (
+            <div className="animate-in slide-in-from-bottom-4 fade-in duration-300 pb-2">
+              <Card className="border-slate-900 bg-slate-900 text-white shadow-xl overflow-hidden rounded-2xl">
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <p className="text-amber-400 font-bold text-xs uppercase tracking-wider mb-1">
+                        Tarifa Final
+                      </p>
+                      <div className="flex items-end gap-1">
+                        <span className="text-3xl font-black">
+                          ${cotizacion.precio}
+                        </span>
+                        <span className="text-slate-400 text-sm mb-1 font-medium">
+                          ARS
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                        Llega en
+                      </p>
+                      <p className="text-lg font-bold text-white">
+                        {cotizacion.eta}
+                      </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">
-                      Llega en
-                    </p>
-                    <p className="text-lg font-bold text-white">
-                      {cotizacion.eta}
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  onClick={() => router.push("/cliente")}
-                  className="w-full h-11 text-base font-bold bg-amber-400 text-slate-900 hover:bg-amber-500 rounded-xl shadow-md group"
-                >
-                  Solicitar Envío{" "}
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+                  <Button
+                    onClick={() => router.push("/cliente")}
+                    className="w-full h-11 text-base font-bold bg-amber-400 text-slate-900 hover:bg-amber-500 rounded-xl shadow-md group"
+                  >
+                    Solicitar Envío{" "}
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </div>
       </form>
     </div>
   );
