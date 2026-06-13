@@ -15,7 +15,7 @@ export default function CotizarPage() {
   const geometriaRuta = useMapboxRoute(origen, destino, mapboxToken);
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-64px)] w-full bg-slate-50 overflow-hidden">
+    <div className="flex flex-col lg:flex-row h-[calc(100dvh-64px)] w-full bg-slate-50 overflow-hidden">
       <FormularioCotizador
         origen={origen}
         setOrigen={setOrigen}

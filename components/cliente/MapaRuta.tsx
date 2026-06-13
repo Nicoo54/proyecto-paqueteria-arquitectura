@@ -20,7 +20,6 @@ export default function MapaRuta({
 }: MapaRutaProps) {
   const mapRef = useRef<any>(null);
 
-  // Efecto de cámara (Auto-encuadre)
   useEffect(() => {
     if (!mapRef.current) return;
 
@@ -69,57 +68,59 @@ export default function MapaRuta({
   };
 
   return (
-    <div className="hidden lg:flex flex-1 relative bg-slate-200">
+    <div className="flex relative flex-1 min-h-0 min-w-0 overflow-hidden">
       {mapboxToken ? (
-        <Map
-          ref={mapRef}
-          mapboxAccessToken={mapboxToken}
-          initialViewState={{
-            longitude: -62.2663,
-            latitude: -38.7183,
-            zoom: 12,
-          }}
-          mapStyle="mapbox://styles/mapbox/streets-v12"
-          style={{ width: "100%", height: "100%" }}
-        >
-          {geometriaRuta && (
-            <Source id="route-source" type="geojson" data={routeGeoJSON}>
-              <Layer {...routeLayerStyle} />
-            </Source>
-          )}
+        <div className="absolute inset-0">
+          <Map
+            ref={mapRef}
+            mapboxAccessToken={mapboxToken}
+            initialViewState={{
+              longitude: -62.2663,
+              latitude: -38.7183,
+              zoom: 12,
+            }}
+            mapStyle="mapbox://styles/mapbox/streets-v12"
+            style={{ width: "100%", height: "100%" }}
+          >
+            {geometriaRuta && (
+              <Source id="route-source" type="geojson" data={routeGeoJSON}>
+                <Layer {...routeLayerStyle} />
+              </Source>
+            )}
 
-          {origen && (
-            <Marker
-              longitude={origen.lng}
-              latitude={origen.lat}
-              anchor="bottom"
-            >
-              <div className="relative group cursor-pointer">
-                <div className="w-8 h-8 bg-slate-900 flex items-center justify-center rounded-full shadow-lg border-2 border-white relative z-10">
-                  <span className="text-white text-xs font-bold">A</span>
+            {origen && (
+              <Marker
+                longitude={origen.lng}
+                latitude={origen.lat}
+                anchor="bottom"
+              >
+                <div className="relative group cursor-pointer">
+                  <div className="w-8 h-8 bg-slate-900 flex items-center justify-center rounded-full shadow-lg border-2 border-white relative z-10">
+                    <span className="text-white text-xs font-bold">A</span>
+                  </div>
+                  <div className="absolute w-2 h-2 bg-slate-900 rotate-45 -bottom-1 left-3 z-0"></div>
                 </div>
-                <div className="absolute w-2 h-2 bg-slate-900 rotate-45 -bottom-1 left-3 z-0"></div>
-              </div>
-            </Marker>
-          )}
+              </Marker>
+            )}
 
-          {destino && (
-            <Marker
-              longitude={destino.lng}
-              latitude={destino.lat}
-              anchor="bottom"
-            >
-              <div className="relative group cursor-pointer">
-                <div className="w-8 h-8 bg-amber-400 flex items-center justify-center rounded-full shadow-lg border-2 border-white relative z-10">
-                  <span className="text-slate-900 text-xs font-bold">B</span>
+            {destino && (
+              <Marker
+                longitude={destino.lng}
+                latitude={destino.lat}
+                anchor="bottom"
+              >
+                <div className="relative group cursor-pointer">
+                  <div className="w-8 h-8 bg-amber-400 flex items-center justify-center rounded-full shadow-lg border-2 border-white relative z-10">
+                    <span className="text-slate-900 text-xs font-bold">B</span>
+                  </div>
+                  <div className="absolute w-2 h-2 bg-amber-400 rotate-45 -bottom-1 left-3 z-0"></div>
                 </div>
-                <div className="absolute w-2 h-2 bg-amber-400 rotate-45 -bottom-1 left-3 z-0"></div>
-              </div>
-            </Marker>
-          )}
-        </Map>
+              </Marker>
+            )}
+          </Map>
+        </div>
       ) : (
-        <div className="w-full h-full flex items-center justify-center bg-slate-100">
+        <div className="absolute inset-0 flex items-center justify-center bg-slate-100">
           <p className="text-slate-500 font-medium">
             Falta el token de Mapbox en .env.local
           </p>

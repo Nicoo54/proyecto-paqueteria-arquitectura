@@ -86,7 +86,7 @@ export default function FormularioCotizador({
   };
 
   return (
-    <div className="w-full lg:w-112.5 xl:w-125 h-full bg-white border-r border-slate-200 p-6 flex flex-col shadow-xl z-10 overflow-y-hidden lg:overflow-y-auto xl:overflow-y-hidden">
+    <div className="w-2/5 h-full bg-white border-r border-slate-200 p-6 flex flex-col shadow-xl z-10 overflow-y-hidden lg:overflow-y-auto xl:overflow-y-hidden">
       <style>{`
         mapbox-search-box { width: 100% !important; }
         mapbox-search-box::part(input):focus {
