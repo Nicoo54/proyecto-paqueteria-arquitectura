@@ -243,7 +243,18 @@ export default function FormularioCotizador({
                     </div>
                   </div>
                   <Button
-                    onClick={() => router.push("/cliente")}
+                    onClick={() => {
+                      sessionStorage.setItem(
+                        "draft_envio",
+                        JSON.stringify({
+                          origen,
+                          destino,
+                          tamanoSeleccionado,
+                          cotizacion,
+                        }),
+                      );
+                      router.push("/cliente/cotizar/resumen");
+                    }}
                     className="w-full h-11 text-base font-bold bg-amber-400 text-slate-900 hover:bg-amber-500 rounded-xl shadow-md group"
                   >
                     Solicitar Envío{" "}
