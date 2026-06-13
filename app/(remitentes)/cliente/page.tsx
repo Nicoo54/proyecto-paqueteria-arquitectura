@@ -8,7 +8,7 @@ const metadata = {
   description: "Panel de control para clientes de Packeteer",
 };
 
-const envioActivo = true;
+const envioActivo = !true;
 
 async function fetchEnvioActivo(userId: string) {
   // Simulamos tiempo de consulta a DB
