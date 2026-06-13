@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -87,13 +87,26 @@ export default function TransportistaForm() {
           )}
         </div>
 
-        <SelectorVehiculo
-          categoriaSeleccionada={categoria}
-          onChange={setCategoria}
-          limpiarError={() => setErrorPatente(null)}
-        />
+        <Suspense
+          fallback={
+            <div className="space-y-3 pt-2">
+              <Label className="text-sm font-semibold text-slate-900">
+                ¿Qué vehículo usás?
+              </Label>
+              <div className="flex items-center justify-center py-6 border-2 border-dashed border-slate-100 rounded-xl">
+                <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            </div>
+          }
+        >
+          <SelectorVehiculo
+            categoriaSeleccionada={categoria}
+            onChange={setCategoria}
+            limpiarError={() => setErrorPatente(null)}
+          />
+        </Suspense>
 
-        {/* Cambiar por validacion real */}
+        {/* TODO: Cambiar por validacion real */}
         {categoria && categoria !== "BICI" && (
           <div className="space-y-2 animate-in fade-in slide-in-from-top-2 pt-2">
             <Label
