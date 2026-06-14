@@ -2,16 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ClerkLoaded, ClerkLoading, UserButton } from "@clerk/nextjs";
 import { Menu, X } from "lucide-react";
-import { useEstadoTransportista } from "@/lib/transportista/EstadoTransportistaProvider";
+import { ClerkLoaded, ClerkLoading, UserButton } from "@clerk/nextjs";
+import { ToggleConexion } from "./ToggleConexion";
 import { NavLinks } from "./NavLinks";
 import { Skeleton } from "../ui/skeleton";
 
-export default function HeaderTransportista() {
+export function HeaderTransportista() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const { isOnline, setIsOnline } = useEstadoTransportista();
 
   return (
     <>
@@ -21,6 +19,7 @@ export default function HeaderTransportista() {
             <button
               className="sm:hidden text-white p-1"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Abrir menú de navegación"
             >
               {isMobileMenuOpen ? (
                 <X className="w-6 h-6" />
@@ -38,9 +37,8 @@ export default function HeaderTransportista() {
           </div>
 
           <div className="flex items-center gap-4 sm:gap-6">
-            <ToggleConexion setIsOnline={setIsOnline} isOnline={isOnline} />
+            <ToggleConexion />
 
-            {/* Navegación Desktop */}
             <nav className="hidden sm:flex items-center gap-1 bg-slate-800 p-1 rounded-xl">
               <NavLinks variant="desktop" />
             </nav>
@@ -65,7 +63,6 @@ export default function HeaderTransportista() {
         </div>
       </header>
 
-      {/* MENÚ MÓVIL DESPLEGABLE */}
       {isMobileMenuOpen && (
         <div className="sm:hidden fixed inset-0 top-16 z-40 bg-slate-900 border-t border-slate-800 animate-in slide-in-from-top-2">
           <nav className="flex flex-col p-4 gap-2">
@@ -77,31 +74,5 @@ export default function HeaderTransportista() {
         </div>
       )}
     </>
-  );
-}
-
-function ToggleConexion({
-  setIsOnline,
-  isOnline,
-}: {
-  setIsOnline: (v: boolean) => void;
-  isOnline: boolean;
-}) {
-  return (
-    <div className="flex items-center gap-2 bg-slate-800 rounded-full p-1 pr-3 border border-slate-700">
-      <button
-        onClick={() => setIsOnline(!isOnline)}
-        className={`relative w-12 h-6 rounded-full transition-colors duration-300 ease-in-out ${isOnline ? "bg-emerald-500" : "bg-slate-600"}`}
-      >
-        <div
-          className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 ${isOnline ? "translate-x-6" : "translate-x-0"}`}
-        />
-      </button>
-      <span
-        className={`text-xs font-bold uppercase tracking-wider ${isOnline ? "text-emerald-400" : "text-slate-400"}`}
-      >
-        {isOnline ? "Activo" : "Inactivo"}
-      </span>
-    </div>
   );
 }

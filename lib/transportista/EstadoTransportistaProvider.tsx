@@ -1,11 +1,18 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
-const EstadoTransportistaContext = createContext<{
+type Ubicacion = { lat: number; lng: number };
+
+interface EstadoTransportistaContextType {
   isOnline: boolean;
-  setIsOnline: (v: boolean) => void;
-} | null>(null);
+  gpsHabilitado: boolean;
+  ubicacion: Ubicacion | null;
+  toggleOnline: () => void;
+}
+
+const EstadoTransportistaContext =
+  createContext<EstadoTransportistaContextType | null>(null);
 
 export function EstadoTransportistaProvider({
   children,
@@ -13,9 +20,88 @@ export function EstadoTransportistaProvider({
   children: React.ReactNode;
 }) {
   const [isOnline, setIsOnline] = useState(false);
-  // TODO: sincronizar con el backend para actualizar estado
+  const [gpsHabilitado, setGpsHabilitado] = useState(false);
+  const [ubicacion, setUbicacion] = useState<Ubicacion | null>(null);
+
+  // Monitorea si el permiso de ubicación está otorgado, y reacciona si lo revocan
+  useEffect(() => {
+    if (!navigator.permissions) return;
+
+    let permissionStatus: PermissionStatus | null = null;
+
+    navigator.permissions.query({ name: "geolocation" }).then((status) => {
+      permissionStatus = status;
+      setGpsHabilitado(status.state === "granted");
+
+      status.onchange = () => {
+        const habilitado = status.state === "granted";
+        setGpsHabilitado(habilitado);
+        if (!habilitado) {
+          setIsOnline(false);
+          // TODO: avisar al backend que pasó a offline (PATCH estado transportista)
+        }
+      };
+    });
+
+    return () => {
+      if (permissionStatus) permissionStatus.onchange = null;
+    };
+  }, []);
+
+  // Mientras está online, reporta posición periódicamente
+  useEffect(() => {
+    if (!isOnline) return;
+
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        setUbicacion({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        });
+        // TODO: enviar ubicación al backend
+      },
+      (error) => {
+        console.error("Error obteniendo ubicación:", error);
+        setIsOnline(false);
+      },
+      { enableHighAccuracy: true, maximumAge: 10000 },
+    );
+
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, [isOnline]);
+
+  const toggleOnline = () => {
+    if (isOnline) {
+      setIsOnline(false);
+      // TODO: avisar al backend que está offline
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUbicacion({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        });
+        setGpsHabilitado(true);
+        setIsOnline(true);
+        // TODO: avisar al backend que está online + enviar ubicación inicial
+      },
+      () => {
+        alert(
+          "Necesitás habilitar la ubicación para activar tu disponibilidad",
+        );
+        setGpsHabilitado(false);
+        setIsOnline(false);
+      },
+      { enableHighAccuracy: true },
+    );
+  };
+
   return (
-    <EstadoTransportistaContext.Provider value={{ isOnline, setIsOnline }}>
+    <EstadoTransportistaContext.Provider
+      value={{ isOnline, gpsHabilitado, ubicacion, toggleOnline }}
+    >
       {children}
     </EstadoTransportistaContext.Provider>
   );

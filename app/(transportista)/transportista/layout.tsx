@@ -1,6 +1,6 @@
 "use client";
 
-import HeaderTransportista from "@/components/Transportista/TransportistaHeader";
+import { HeaderTransportista } from "@/components/Transportista/TransportistaHeader";
 import { EstadoTransportistaProvider } from "@/lib/transportista/EstadoTransportistaProvider";
 
 export default function TransportistaLayout({
