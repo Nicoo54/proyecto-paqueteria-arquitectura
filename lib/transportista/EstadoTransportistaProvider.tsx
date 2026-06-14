@@ -6,9 +6,11 @@ type Ubicacion = { lat: number; lng: number };
 
 interface EstadoTransportistaContextType {
   isOnline: boolean;
+  enViaje: boolean;
   gpsHabilitado: boolean;
   ubicacion: Ubicacion | null;
   toggleOnline: () => void;
+  marcarEnViaje: (activo: boolean) => void;
 }
 
 const EstadoTransportistaContext =
@@ -20,6 +22,7 @@ export function EstadoTransportistaProvider({
   children: React.ReactNode;
 }) {
   const [isOnline, setIsOnline] = useState(false);
+  const [enViaje, setEnViaje] = useState(false);
   const [gpsHabilitado, setGpsHabilitado] = useState(false);
   const [ubicacion, setUbicacion] = useState<Ubicacion | null>(null);
 
@@ -71,6 +74,8 @@ export function EstadoTransportistaProvider({
   }, [isOnline]);
 
   const toggleOnline = () => {
+    if (enViaje) return;
+
     if (isOnline) {
       setIsOnline(false);
       // TODO: avisar al backend que está offline
@@ -98,9 +103,21 @@ export function EstadoTransportistaProvider({
     );
   };
 
+  const marcarEnViaje = (activo: boolean) => {
+    setEnViaje(activo);
+    if (activo) setIsOnline(true);
+  };
+
   return (
     <EstadoTransportistaContext.Provider
-      value={{ isOnline, gpsHabilitado, ubicacion, toggleOnline }}
+      value={{
+        isOnline,
+        enViaje,
+        gpsHabilitado,
+        ubicacion,
+        toggleOnline,
+        marcarEnViaje,
+      }}
     >
       {children}
     </EstadoTransportistaContext.Provider>

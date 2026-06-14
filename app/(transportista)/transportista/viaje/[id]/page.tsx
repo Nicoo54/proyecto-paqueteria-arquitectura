@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MapRef } from "react-map-gl/mapbox";
 import { useNavegacionEnvio } from "@/lib/transportista/viaje/hooks/useNavegacionEnvio";
@@ -12,6 +12,7 @@ import { distanciaKm } from "@/lib/utils";
 import { DISTANCIA_MAXIMA_CONFIRMACION_KM } from "@/lib/transportista/viaje/constants";
 import { ModalEntregaCompletada } from "@/components/Transportista/viaje/ModalEntregaCompletada";
 import { useUbicacionSimulada } from "@/lib/transportista/viaje/hooks/useUbicacionSimulada";
+import { useEstadoTransportista } from "@/lib/transportista/EstadoTransportistaProvider";
 
 export default function NavegacionViajePage({
   params,
@@ -47,6 +48,13 @@ export default function NavegacionViajePage({
     destinoActual,
     mapboxToken,
   );
+
+  const { marcarEnViaje } = useEstadoTransportista();
+
+  useEffect(() => {
+    marcarEnViaje(true);
+    return () => marcarEnViaje(false);
+  }, []);
 
   const [mostrarModalEntrega, setMostrarModalEntrega] = useState(false);
 
