@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useRef } from "react";
+import { use, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MapRef } from "react-map-gl/mapbox";
 import { useNavegacionEnvio } from "@/lib/transportista/viaje/hooks/useNavegacionEnvio";
@@ -8,6 +8,9 @@ import { useUbicacionEnVivo } from "@/lib/transportista/viaje/hooks/useUbicacion
 import { useRutaMapbox } from "@/lib/transportista/viaje/hooks/useRutaMapbox";
 import { MapaNavegacion } from "@/components/Transportista/viaje/MapaNavegacion";
 import { TarjetaNavegacion } from "@/components/Transportista/viaje/TarjetaNavegacion";
+import { distanciaKm } from "@/lib/utils";
+import { DISTANCIA_MAXIMA_CONFIRMACION_KM } from "@/lib/transportista/viaje/constants";
+import { ModalEntregaCompletada } from "@/components/Transportista/viaje/ModalEntregaCompletada";
 
 export default function NavegacionViajePage({
   params,
@@ -23,19 +26,35 @@ export default function NavegacionViajePage({
     useNavegacionEnvio(id);
 
   const { ubicacion, error: errorGps } = useUbicacionEnVivo();
+
+  const distanciaAlDestino = ubicacion
+    ? distanciaKm(ubicacion, destinoActual)
+    : null;
+
+  const puedeConfirmar =
+    ubicacion !== null &&
+    distanciaAlDestino !== null &&
+    distanciaAlDestino <= DISTANCIA_MAXIMA_CONFIRMACION_KM;
+
   const { geometria, distanciaTexto, duracionTexto } = useRutaMapbox(
     ubicacion,
     destinoActual,
     mapboxToken,
   );
 
+  const [mostrarModalEntrega, setMostrarModalEntrega] = useState(false);
+
   const handleConfirmar = async () => {
     await confirmarPaso();
 
     // Si era el paso de entrega, el ciclo terminó -> volver al radar
     if (fase === "HACIA_ENTREGA") {
-      router.push("/transportista");
+      setMostrarModalEntrega(true);
     }
+  };
+
+  const handleContinuarDesdeModal = () => {
+    router.push("/transportista");
   };
 
   if (!envio || !fase || !destinoActual) {
@@ -68,7 +87,15 @@ export default function NavegacionViajePage({
         distanciaTexto={distanciaTexto}
         duracionTexto={duracionTexto}
         isUpdating={isUpdating}
+        puedeConfirmar={puedeConfirmar}
+        tieneGps={ubicacion !== null}
         onConfirmar={handleConfirmar}
+      />
+
+      <ModalEntregaCompletada
+        open={mostrarModalEntrega}
+        codigoEnvio={envio.codigo_envio}
+        onContinuar={handleContinuarDesdeModal}
       />
     </div>
   );

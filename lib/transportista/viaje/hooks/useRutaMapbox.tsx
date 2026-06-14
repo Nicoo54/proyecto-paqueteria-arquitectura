@@ -2,21 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Coordenada } from "../types";
+import { distanciaKm } from "@/lib/utils";
 
 const INTERVALO_MINIMO_MS = 15000; // recalcular cada 15s como máximo
 const DISTANCIA_MINIMA_KM = 0.05; // o si se movió 50m
-
-function distanciaKm(a: Coordenada, b: Coordenada) {
-  const R = 6371;
-  const dLat = ((b.lat - a.lat) * Math.PI) / 180;
-  const dLng = ((b.lng - a.lng) * Math.PI) / 180;
-  const sa =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((a.lat * Math.PI) / 180) *
-      Math.cos((b.lat * Math.PI) / 180) *
-      Math.sin(dLng / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(sa));
-}
 
 export function useRutaMapbox(
   origen: Coordenada | null,

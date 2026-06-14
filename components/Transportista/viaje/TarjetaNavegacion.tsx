@@ -9,6 +9,8 @@ interface Props {
   distanciaTexto: string;
   duracionTexto: string;
   isUpdating: boolean;
+  puedeConfirmar: boolean;
+  tieneGps: boolean;
   onConfirmar: () => void;
 }
 
@@ -18,9 +20,17 @@ export function TarjetaNavegacion({
   distanciaTexto,
   duracionTexto,
   isUpdating,
+  puedeConfirmar,
+  tieneGps,
   onConfirmar,
 }: Props) {
   const esRetiro = fase === "HACIA_RETIRO";
+
+  const mensajeBloqueo = !tieneGps
+    ? "Activá tu ubicación para continuar"
+    : !puedeConfirmar
+      ? `Acercate al punto de ${esRetiro ? "retiro" : "entrega"} para confirmar`
+      : null;
 
   return (
     <div className="absolute inset-x-0 bottom-0 p-4 z-10">
@@ -56,7 +66,7 @@ export function TarjetaNavegacion({
           <div className="p-4 bg-white">
             <Button
               onClick={onConfirmar}
-              disabled={isUpdating}
+              disabled={isUpdating || !puedeConfirmar}
               className={`w-full h-14 text-lg font-bold rounded-xl ${
                 esRetiro
                   ? "bg-amber-400 text-slate-900 hover:bg-amber-500"
@@ -74,6 +84,12 @@ export function TarjetaNavegacion({
                 "Marcar como entregado"
               )}
             </Button>
+
+            {mensajeBloqueo && (
+              <p className="text-center text-xs font-bold text-slate-400 mt-2">
+                {mensajeBloqueo}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
