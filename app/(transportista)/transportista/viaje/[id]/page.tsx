@@ -11,6 +11,7 @@ import { TarjetaNavegacion } from "@/components/Transportista/viaje/TarjetaNaveg
 import { distanciaKm } from "@/lib/utils";
 import { DISTANCIA_MAXIMA_CONFIRMACION_KM } from "@/lib/transportista/viaje/constants";
 import { ModalEntregaCompletada } from "@/components/Transportista/viaje/ModalEntregaCompletada";
+import { useUbicacionSimulada } from "@/lib/transportista/viaje/hooks/useUbicacionSimulada";
 
 export default function NavegacionViajePage({
   params,
@@ -25,7 +26,12 @@ export default function NavegacionViajePage({
   const { envio, fase, destinoActual, isUpdating, confirmarPaso } =
     useNavegacionEnvio(id);
 
-  const { ubicacion, error: errorGps } = useUbicacionEnVivo();
+  const useUbicacion =
+    process.env.NEXT_PUBLIC_SIMULAR_GPS === "true"
+      ? useUbicacionSimulada
+      : useUbicacionEnVivo;
+
+  const { ubicacion, error: errorGps } = useUbicacion(destinoActual);
 
   const distanciaAlDestino = ubicacion
     ? distanciaKm(ubicacion, destinoActual)
