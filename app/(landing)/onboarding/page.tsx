@@ -32,7 +32,7 @@ function OnboardingOrchestrator() {
     if (userRole === "remitente") {
       router.push("/cliente");
     } else if (userRole === "transportista") {
-      router.push("/transportistas");
+      router.push("/transportista");
     }
   }, [isLoaded, user, router]);
 
