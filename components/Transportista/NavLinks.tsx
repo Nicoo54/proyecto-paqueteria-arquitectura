@@ -1,11 +1,11 @@
-import { Car, Clock, Map } from "lucide-react";
+import { Clock, Map, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navLinks = [
   { name: "Inicio", href: "/transportista", icon: Map },
   { name: "Historial", href: "/transportista/historial", icon: Clock },
-  { name: "Mi Vehículo", href: "/transportista/perfil", icon: Car },
+  { name: "Perfil", href: "/transportista/perfil", icon: User },
 ];
 
 export function NavLinks({
