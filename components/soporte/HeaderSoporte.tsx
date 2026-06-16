@@ -23,7 +23,7 @@ export default function HeaderSoporte() {
           className="text-lg font-black tracking-tight flex items-center gap-2 shrink-0"
         >
           <LifeBuoy className="w-5 h-5 text-indigo-400 animate-spin-slow" />
-          Packeteer<span className="text-indigo-400">Helper</span>
+          Packeteer<span className="text-indigo-400">Soporte</span>
         </Link>
 
         <div className="flex-1 flex items-center justify-end gap-6">

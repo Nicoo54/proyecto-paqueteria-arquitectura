@@ -12,8 +12,8 @@ import {
   Layers,
   DollarSign,
 } from "lucide-react";
-import { useDashboardMetricas } from "@/lib/hooks/soporte/useDashboardMetricas";
-import { ZonaCalienteDB } from "@/lib/types/metricas";
+import { useDashboardMetricas } from "@/features/soporte/hooks/useDashboardMetricas";
+import { ZonaCalienteDB } from "@/features/soporte/types/metricas";
 
 export default function MetricasAnalyticsPage() {
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";

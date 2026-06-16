@@ -10,12 +10,12 @@ import {
   History,
   ShieldCheck,
 } from "lucide-react";
-import { useHistorialHelper } from "@/lib/hooks/soporte/useHistorialHelper";
-import { TicketResuelto } from "@/lib/types/historialHelper";
+import { TicketResuelto } from "@/features/soporte/types/historialSoporte";
+import { useHistorialSoporte } from "@/features/soporte/hooks/useHistorialSoporte";
 
 export default function HistorialResueltosPage() {
   const router = useRouter();
-  const { tickets, isLoading } = useHistorialHelper();
+  const { tickets, isLoading } = useHistorialSoporte();
 
   if (isLoading) {
     return (

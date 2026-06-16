@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import Map, { Marker, Source, Layer } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { Ubicacion } from "@/lib/cliente/types";
+import { Ubicacion } from "@/features/remitente/types";
 
 interface MapaRutaProps {
   origen: Ubicacion;

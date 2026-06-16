@@ -10,9 +10,9 @@ import {
   CheckCircle2,
   MessageSquare,
 } from "lucide-react";
-import { useHistorialDetalle } from "@/lib/hooks/soporte/useHistorialDetalle";
+import { useHistorialDetalle } from "@/features/soporte/hooks/useHistorialDetalle";
 
-export default function DetalleHistorialHelperPage({
+export default function DetalleHistorialSoportePage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -50,7 +50,7 @@ export default function DetalleHistorialHelperPage({
       <div className="space-y-6">
         <MotivoCliente motivo={ticket.motivo} />
 
-        <RespuestaSoporte respuesta={ticket.comentarios_helper} />
+        <RespuestaSoporte respuesta={ticket.comentarios_soporte} />
 
         {/* BLOQUE 3: CONCLUSIÓN TÉCNICA FINAL */}
         <ResolucionSoporte resolucion={ticket.resolucion} />

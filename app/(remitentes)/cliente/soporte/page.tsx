@@ -12,7 +12,7 @@ const ticketsMock = [
     fecha: "15 Jun, 2026",
     asunto: "Paquete dañado",
     envio_id: "1004",
-    helper: "María L.",
+    soporte: "María L.",
     estado: "EN_PROGRESO",
   },
   {
@@ -20,7 +20,7 @@ const ticketsMock = [
     fecha: "12 Jun, 2026",
     asunto: "Demora en la recolección",
     envio_id: "1003",
-    helper: "Juan P.",
+    soporte: "Juan P.",
     estado: "RESUELTO",
   },
   {
@@ -28,7 +28,7 @@ const ticketsMock = [
     fecha: "02 Jun, 2026",
     asunto: "Chofer no respondía",
     envio_id: "1001",
-    helper: "Sin asignar",
+    soporte: "Sin asignar",
     estado: "ABIERTO",
   },
 ];
@@ -83,7 +83,7 @@ export default function HistorialTicketsPage() {
                   <th className="px-6 py-4">Ticket</th>
                   <th className="px-6 py-4">Fecha</th>
                   <th className="px-6 py-4">Asunto</th>
-                  <th className="px-6 py-4">Helper Asignado</th>
+                  <th className="px-6 py-4">Soporte asignado</th>
                   <th className="px-6 py-4">Estado</th>
                   <th className="px-6 py-4 text-center">Acciones</th>
                 </tr>
@@ -102,7 +102,7 @@ export default function HistorialTicketsPage() {
                       {ticket.asunto}
                     </td>
                     <td className="px-6 py-4 font-medium text-slate-600">
-                      {ticket.helper}
+                      {ticket.soporte}
                     </td>
                     <td className="px-6 py-4">
                       <span

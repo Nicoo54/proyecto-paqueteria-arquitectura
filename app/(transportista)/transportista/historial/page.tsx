@@ -9,8 +9,8 @@ import {
   ChevronRight,
   Calendar,
 } from "lucide-react";
-import { useViajesHistorial } from "@/lib/hooks/transportista/useViajesHistorial";
-import { ViajeHistorial } from "@/lib/transportista/viaje/types";
+import { useViajesHistorial } from "@/features/transportista/hooks/useViajesHistorial";
+import { ViajeHistorial } from "@/features/transportista/viaje/types";
 
 export default function HistorialViajesPage() {
   const router = useRouter();

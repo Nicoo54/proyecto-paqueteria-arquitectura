@@ -21,7 +21,7 @@ interface TicketDetalle {
   descripcion: string;
   estado: string; // 'ABIERTO', 'EN_PROGRESO', 'RESUELTO'
   fecha_creacion: string;
-  helper?: {
+  soporte?: {
     nombre: string;
     comentario: string;
     conclusion?: string;
@@ -41,7 +41,7 @@ const fetchDetalleTicket = async (id: string): Promise<TicketDetalle> => {
           "Hola, el conductor me entregó el paquete pero la caja estaba abollada en una de las esquinas. Necesito saber cómo proceder con el seguro de carga.",
         estado: "ABIERTO",
         fecha_creacion: "15 de Junio de 2026 a las 09:15",
-        helper: {
+        soporte: {
           nombre: "María L.",
           comentario:
             "Hola, lamentamos el inconveniente. Por favor, subí 3 fotos de la caja y del producto en su interior a este mismo hilo para activar la póliza con nuestra aseguradora.",
@@ -146,8 +146,8 @@ export default function DetalleTicketPage({
           </CardContent>
         </Card>
 
-        {/* RESPUESTAS DEL HELPER (Si existen) */}
-        {ticket.helper ? (
+        {/* RESPUESTAS DEL Soporte (Si existen) */}
+        {ticket.soporte ? (
           <Card className="border-blue-100 shadow-sm rounded-2xl overflow-hidden bg-white relative">
             <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
             <div className="bg-blue-50/50 px-6 py-4 border-b border-blue-100 flex items-center justify-between ml-1">
@@ -157,21 +157,21 @@ export default function DetalleTicketPage({
                 </div>
                 <div>
                   <p className="font-bold text-slate-900 text-sm">
-                    Soporte Packeteer ({ticket.helper.nombre})
+                    Soporte Packeteer ({ticket.soporte.nombre})
                   </p>
                   <p className="text-xs text-slate-500">
-                    {ticket.helper.fecha_respuesta}
+                    {ticket.soporte.fecha_respuesta}
                   </p>
                 </div>
               </div>
             </div>
             <CardContent className="p-6 ml-1 space-y-6">
               <p className="text-slate-700 leading-relaxed text-sm whitespace-pre-wrap">
-                {ticket.helper.comentario}
+                {ticket.soporte.comentario}
               </p>
 
               {/* CONCLUSIÓN TÉCNICA (Solo si está resuelto) */}
-              {ticket.helper.conclusion && (
+              {ticket.soporte.conclusion && (
                 <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex gap-3 items-start">
                   <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                   <div>
@@ -179,7 +179,7 @@ export default function DetalleTicketPage({
                       Resolución Final
                     </h4>
                     <p className="text-emerald-800 text-sm leading-relaxed">
-                      {ticket.helper.conclusion}
+                      {ticket.soporte.conclusion}
                     </p>
                   </div>
                 </div>
@@ -193,7 +193,7 @@ export default function DetalleTicketPage({
               Tu ticket está en la fila
             </h3>
             <p className="text-sm text-slate-500 max-w-sm mx-auto">
-              Un miembro de nuestro equipo de soporte (Helper) tomará tu caso y
+              Un miembro de nuestro equipo de soporte (Soporte) tomará tu caso y
               te responderá por este medio a la brevedad.
             </p>
           </div>

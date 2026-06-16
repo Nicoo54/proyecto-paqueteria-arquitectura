@@ -1,5 +1,5 @@
 import { PaqueteCard } from "./PaqueteCard";
-import { PaqueteDisponible } from "@/lib/transportista/types";
+import { PaqueteDisponible } from "@/features/transportista/types/types";
 
 export function ListaPaquetes({
   paquetes,

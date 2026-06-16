@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShieldAlert, ArrowUpRight, RefreshCw, Ticket } from "lucide-react";
-import { useColaTickets } from "@/lib/hooks/soporte/useColaTickets";
-import { TicketPendiente } from "@/lib/types/soporte";
+import { useColaTickets } from "@/features/soporte/hooks/useColaTickets";
+import { TicketPendiente } from "@/features/soporte/types/soporte";
 
 export default function ColaSoportePage() {
   const router = useRouter();
@@ -13,7 +13,7 @@ export default function ColaSoportePage() {
     tickets,
     isLoading,
     isActionProcessing,
-    asignarTicketAHelper,
+    asignarTicketASoporte,
     refrescarCola,
   } = useColaTickets();
 
@@ -56,7 +56,7 @@ export default function ColaSoportePage() {
               key={ticket.codigo_reclamo}
               ticket={ticket}
               isActionProcessing={isActionProcessing}
-              asignarTicketAHelper={asignarTicketAHelper}
+              asignarTicketASoporte={asignarTicketASoporte}
             />
           ))
         )}
@@ -83,11 +83,14 @@ function ColaVacia() {
 function TicketCard({
   ticket,
   isActionProcessing,
-  asignarTicketAHelper,
+  asignarTicketASoporte,
 }: {
   ticket: TicketPendiente;
   isActionProcessing: string | null;
-  asignarTicketAHelper: (codigo_reclamo: string, onSuccess: () => void) => void;
+  asignarTicketASoporte: (
+    codigo_reclamo: string,
+    onSuccess: () => void,
+  ) => void;
 }) {
   const router = useRouter();
 
@@ -115,7 +118,7 @@ function TicketCard({
           onSuccess={() => {
             router.push(`/soporte/ticket/${ticket.codigo_reclamo}`);
           }}
-          asignarTicketAHelper={asignarTicketAHelper}
+          asignarTicketASoporte={asignarTicketASoporte}
         />
       </CardContent>
     </Card>
@@ -151,12 +154,15 @@ function AtenderTicketButton({
   codigo_reclamo,
   isProcessing,
   onSuccess,
-  asignarTicketAHelper,
+  asignarTicketASoporte,
 }: {
   codigo_reclamo: string;
   isProcessing: boolean;
   onSuccess: () => void;
-  asignarTicketAHelper: (codigo_reclamo: string, onSuccess: () => void) => void;
+  asignarTicketASoporte: (
+    codigo_reclamo: string,
+    onSuccess: () => void,
+  ) => void;
 }) {
   const router = useRouter();
 
@@ -164,7 +170,7 @@ function AtenderTicketButton({
     <Button
       disabled={isProcessing}
       onClick={() => {
-        asignarTicketAHelper(codigo_reclamo, () => {
+        asignarTicketASoporte(codigo_reclamo, () => {
           router.push(`/soporte/ticket/${codigo_reclamo}`);
         });
       }}

@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import {
   CATEGORIAS_VEHICULOS,
   CategoriaVehiculo,
-} from "@/lib/onboardingContent";
+} from "@/features/landing/context/onboardingContent";
 
 // TODO: Cambiar a fetch a API real
 const fetchCategoriasVehiculosPromise = new Promise<

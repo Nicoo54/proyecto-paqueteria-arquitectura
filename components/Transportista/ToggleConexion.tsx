@@ -1,6 +1,6 @@
 "use client";
 
-import { useEstadoTransportista } from "@/lib/transportista/EstadoTransportistaProvider";
+import { useEstadoTransportista } from "@/features/transportista/context/EstadoTransportistaProvider";
 
 export function ToggleConexion() {
   const { isOnline, enViaje, toggleOnline } = useEstadoTransportista();

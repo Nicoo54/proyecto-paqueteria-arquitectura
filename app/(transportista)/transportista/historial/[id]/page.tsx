@@ -13,7 +13,7 @@ import {
   CloudSun,
 } from "lucide-react";
 import Link from "next/link";
-import { useViajeDetalle } from "@/lib/hooks/transportista/useViajeDetalle";
+import { useViajeDetalle } from "@/features/transportista/hooks/useViajeDetalle";
 
 export default function DetalleViajeTransportistaPage({
   params,

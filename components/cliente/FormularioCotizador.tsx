@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
-import { Ubicacion } from "@/lib/cliente/types";
+import { Ubicacion } from "@/features/remitente/types";
 import SelectorTamanos from "./SelectorTamanos";
 import dynamic from "next/dynamic";
 

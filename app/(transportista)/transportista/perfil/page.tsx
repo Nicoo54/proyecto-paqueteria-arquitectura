@@ -2,7 +2,7 @@
 
 import { useUser } from "@clerk/nextjs";
 import { CheckCircle2, AlertCircle, ShieldCheck } from "lucide-react";
-import { usePerfil } from "@/lib/hooks/transportista/usePerfil";
+import { usePerfil } from "@/features/transportista/hooks/usePerfil";
 import { PerfilHeader } from "@/components/Transportista/perfil/PerfilHeader";
 import { SeccionVehiculo } from "@/components/Transportista/perfil/SeccionVehiculo";
 import { SeccionCobro } from "@/components/Transportista/perfil/SeccionCobro";

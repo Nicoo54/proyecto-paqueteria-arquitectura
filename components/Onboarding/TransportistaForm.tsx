@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PatenteSchema } from "@/schema/onboarding";
 import SelectorVehiculo from "./SelectorVehiculo";
-import { useValidarDni } from "@/lib/onboardingContent";
+import { useValidarDni } from "@/features/landing/context/onboardingContent";
 
 export default function TransportistaForm() {
   const router = useRouter();

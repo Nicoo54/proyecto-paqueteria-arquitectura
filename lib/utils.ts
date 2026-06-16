@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Coordenada } from "./transportista/viaje/types";
+import { Coordenada } from "../features/transportista/viaje/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Fase } from "@/lib/transportista/viaje/types";
+import { Fase } from "@/features/transportista/viaje/types";
 import { MapPin, Navigation, Clock } from "lucide-react";
 
 interface Props {

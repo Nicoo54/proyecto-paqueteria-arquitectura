@@ -3,16 +3,16 @@
 import { use, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MapRef } from "react-map-gl/mapbox";
-import { useNavegacionEnvio } from "@/lib/transportista/viaje/hooks/useNavegacionEnvio";
-import { useUbicacionEnVivo } from "@/lib/transportista/viaje/hooks/useUbicacionEnVivo";
-import { useRutaMapbox } from "@/lib/transportista/viaje/hooks/useRutaMapbox";
+import { useNavegacionEnvio } from "@/features/transportista/viaje/hooks/useNavegacionEnvio";
+import { useUbicacionEnVivo } from "@/features/transportista/viaje/hooks/useUbicacionEnVivo";
+import { useRutaMapbox } from "@/features/transportista/viaje/hooks/useRutaMapbox";
 import { MapaNavegacion } from "@/components/Transportista/viaje/MapaNavegacion";
 import { TarjetaNavegacion } from "@/components/Transportista/viaje/TarjetaNavegacion";
 import { distanciaKm } from "@/lib/utils";
-import { DISTANCIA_MAXIMA_CONFIRMACION_KM } from "@/lib/transportista/viaje/constants";
+import { DISTANCIA_MAXIMA_CONFIRMACION_KM } from "@/features/transportista/viaje/constants";
 import { ModalEntregaCompletada } from "@/components/Transportista/viaje/ModalEntregaCompletada";
-import { useUbicacionSimulada } from "@/lib/transportista/viaje/hooks/useUbicacionSimulada";
-import { useEstadoTransportista } from "@/lib/transportista/EstadoTransportistaProvider";
+import { useUbicacionSimulada } from "@/features/transportista/viaje/hooks/useUbicacionSimulada";
+import { useEstadoTransportista } from "@/features/transportista/context/EstadoTransportistaProvider";
 
 export default function NavegacionViajePage({
   params,

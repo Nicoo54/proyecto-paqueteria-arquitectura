@@ -3,7 +3,7 @@
 import { forwardRef } from "react";
 import Map, { Marker, Source, Layer, MapRef } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { Coordenada } from "@/lib/transportista/viaje/types";
+import { Coordenada } from "@/features/transportista/viaje/types";
 
 interface Props {
   mapboxToken: string;

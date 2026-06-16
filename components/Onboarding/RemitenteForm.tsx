@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useValidarDni } from "@/lib/onboardingContent";
+import { useValidarDni } from "@/features/landing/context/onboardingContent";
 
 export default function RemitenteForm() {
   const router = useRouter();

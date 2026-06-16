@@ -13,8 +13,8 @@ import {
   FileText,
   Send,
 } from "lucide-react";
-import { useGestionTicket } from "@/lib/hooks/soporte/useGestionTicket";
-import { TicketGestionDetalle } from "@/lib/types/ticketGestion";
+import { useGestionTicket } from "@/features/soporte/hooks/useGestionTicket";
+import { TicketGestionDetalle } from "@/features/soporte/types/ticketGestion";
 
 export default function GestionTicketPage({
   params,

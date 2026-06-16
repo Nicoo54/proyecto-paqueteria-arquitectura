@@ -1,6 +1,6 @@
 "use client";
 
-import { TamanoPaquete } from "@/lib/cliente/types";
+import { TamanoPaquete } from "@/features/remitente/types";
 import { use } from "react";
 
 // 1. Promesa estable (Afuera del componente)

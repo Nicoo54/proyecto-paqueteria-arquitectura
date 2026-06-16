@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { PaqueteDisponible } from "@/lib/transportista/types";
+import { PaqueteDisponible } from "@/features/transportista/types/types";
 import { Clock, Navigation } from "lucide-react";
 
 export default function ModalDetallePaquete({

@@ -1,6 +1,6 @@
 import { Package, Navigation, Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { PaqueteDisponible } from "@/lib/transportista/types";
+import { PaqueteDisponible } from "@/features/transportista/types/types";
 
 export function PaqueteCard({
   paquete,

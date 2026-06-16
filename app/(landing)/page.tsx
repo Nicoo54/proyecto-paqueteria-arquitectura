@@ -201,7 +201,7 @@ function Footer() {
             href="/admin"
             className="text-slate-400 hover:text-slate-900 transition-colors border-l border-slate-200 pl-8"
           >
-            Acceso Interno (Helpers)
+            Acceso Interno (Soporte/Admin)
           </Link>
         </div>
       </div>

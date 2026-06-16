@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useRadarTransportista } from "@/lib/transportista/useRadarTransportista";
-import { PaqueteDisponible } from "@/lib/transportista/types";
+import { useRadarTransportista } from "@/features/transportista/hooks/useRadarTransportista";
+import { PaqueteDisponible } from "@/features/transportista/types/types";
 import { VistaOffline } from "@/components/Transportista/home/VistaOffline";
 import { VistaCargando } from "@/components/Transportista/home/VistaCargando";
 import { VistaViajeActivo } from "@/components/Transportista/home/VistaViajeActivo";
