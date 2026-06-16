@@ -6,7 +6,7 @@ export const clienteService = {
     return new Promise((resolve) => {
       setTimeout(() => {
         // MOCK: Cambiar a true para ver la tarjeta del viaje en curso
-        const tieneEnvioActivo = false;
+        const tieneEnvioActivo = true;
 
         if (!tieneEnvioActivo) {
           resolve(null);
