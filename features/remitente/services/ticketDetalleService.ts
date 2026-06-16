@@ -1,7 +1,7 @@
 import { TicketDetalle } from "../types/ticketDetalle";
 
+// TODO: Reemplazar por llamada real a la API
 export const ticketDetalleService = {
-  // GET /api/clientes/me/tickets/:id
   async obtenerDetalleTicket(id: string): Promise<TicketDetalle> {
     return new Promise((resolve) => {
       setTimeout(() => {
