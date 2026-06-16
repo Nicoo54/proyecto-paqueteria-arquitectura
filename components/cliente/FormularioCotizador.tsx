@@ -1,41 +1,24 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
-import SelectorTamanos from "./SelectorTamanos";
 import dynamic from "next/dynamic";
+import SelectorTamanos from "./SelectorTamanos";
 import { Ubicacion } from "@/shared/types/ubicacion";
+import { useCotizador } from "@/features/remitente/hooks/useCotizador";
 
 const SearchBox = dynamic(
   () => import("@mapbox/search-js-react").then((mod) => mod.SearchBox),
   { ssr: false },
 );
 
-// TODO: Cambiar por endpoint real cuando esté listo en el backend
-const cotizarEnBackend = async (
-  origen: Ubicacion,
-  destino: Ubicacion,
-  tamano: string,
-) => {
-  return new Promise<{ precio: number; eta: string; distancia: string }>(
-    (resolve) => {
-      setTimeout(
-        () =>
-          resolve({ precio: 1850.5, eta: "15-20 min", distancia: "3.2 km" }),
-        1000,
-      );
-    },
-  );
-};
-
 interface FormularioProps {
-  origen: Ubicacion;
+  origen: Ubicacion | null;
   setOrigen: (u: Ubicacion) => void;
-  destino: Ubicacion;
+  destino: Ubicacion | null;
   setDestino: (u: Ubicacion) => void;
   mapboxToken: string;
 }
@@ -47,32 +30,19 @@ export default function FormularioCotizador({
   setDestino,
   mapboxToken,
 }: FormularioProps) {
-  const router = useRouter();
-
-  const [origenTexto, setOrigenTexto] = useState("");
-  const [destinoTexto, setDestinoTexto] = useState("");
-
-  const [tamanoSeleccionado, setTamanoSeleccionado] = useState<string>("S");
-  const [isCotizando, setIsCotizando] = useState(false);
-  const [cotizacion, setCotizacion] = useState<{
-    precio: number;
-    eta: string;
-    distancia: string;
-  } | null>(null);
-
-  const handleCotizar = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!origen || !destino || !tamanoSeleccionado) return;
-    setIsCotizando(true);
-    setCotizacion(null);
-    const resultado = await cotizarEnBackend(
-      origen,
-      destino,
-      tamanoSeleccionado,
-    );
-    setCotizacion(resultado);
-    setIsCotizando(false);
-  };
+  const {
+    origenTexto,
+    setOrigenTexto,
+    destinoTexto,
+    setDestinoTexto,
+    tamanoSeleccionado,
+    setTamanoSeleccionado,
+    isCotizando,
+    cotizacion,
+    setCotizacion,
+    handleCotizar,
+    handleSolicitarEnvio,
+  } = useCotizador(origen, destino);
 
   const mapboxSearchTheme = {
     variables: {
@@ -86,14 +56,10 @@ export default function FormularioCotizador({
   };
 
   return (
-    <div className="w-2/5 h-full bg-white border-r border-slate-200 p-6 flex flex-col shadow-xl z-10 overflow-y-hidden lg:overflow-y-auto xl:overflow-y-hidden">
+    <div className="w-full lg:w-2/5 h-full bg-white border-r border-slate-200 p-6 flex flex-col shadow-xl z-10 overflow-y-auto lg:overflow-y-auto">
       <style>{`
         mapbox-search-box { width: 100% !important; }
-        mapbox-search-box::part(input):focus {
-          border-color: #f59e0b !important;
-          box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2) !important;
-          outline: none !important;
-        }
+        mapbox-search-box::part(input):focus { border-color: #f59e0b !important; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2) !important; outline: none !important; }
       `}</style>
 
       <div className="mb-4 shrink-0">
@@ -109,6 +75,7 @@ export default function FormularioCotizador({
         <div className="relative">
           <div className="absolute left-3.25 top-8 bottom-8 w-0.5 bg-slate-200 z-0"></div>
 
+          {/* ORIGEN */}
           <div className="relative z-50 space-y-1 mb-3">
             <Label className="text-slate-900 text-sm font-bold flex items-center gap-2">
               <div className="w-7 h-7 rounded-full bg-slate-900 flex items-center justify-center text-white text-xs shadow-sm">
@@ -127,14 +94,13 @@ export default function FormularioCotizador({
                 }}
                 placeholder="Buscar dirección de origen..."
                 value={origenTexto}
-                onChange={(texto) => setOrigenTexto(texto)}
+                onChange={setOrigenTexto}
                 onRetrieve={(res) => {
                   if (res.features?.length > 0) {
                     const feat = res.features[0];
-                    const nombre = feat.properties.name;
-                    setOrigenTexto(nombre); // Forzamos a que el texto se quede
+                    setOrigenTexto(feat.properties.name);
                     setOrigen({
-                      nombre,
+                      nombre: feat.properties.name,
                       lng: feat.geometry.coordinates[0],
                       lat: feat.geometry.coordinates[1],
                     });
@@ -164,14 +130,13 @@ export default function FormularioCotizador({
                 }}
                 placeholder="Buscar dirección de destino..."
                 value={destinoTexto}
-                onChange={(texto) => setDestinoTexto(texto)}
+                onChange={setDestinoTexto}
                 onRetrieve={(res) => {
                   if (res.features?.length > 0) {
                     const feat = res.features[0];
-                    const nombre = feat.properties.name;
-                    setDestinoTexto(nombre); // Forzamos a que el texto se quede
+                    setDestinoTexto(feat.properties.name);
                     setDestino({
-                      nombre,
+                      nombre: feat.properties.name,
                       lng: feat.geometry.coordinates[0],
                       lat: feat.geometry.coordinates[1],
                     });
@@ -189,7 +154,7 @@ export default function FormularioCotizador({
           <Suspense
             fallback={
               <div className="flex items-center justify-center h-28 border-2 border-dashed border-slate-200 rounded-2xl">
-                <div className="w-6 h-6 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-6 h-6 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
               </div>
             }
           >
@@ -205,7 +170,7 @@ export default function FormularioCotizador({
 
         <div className="flex-1 min-h-0" />
 
-        {/* COTIZACION */}
+        {/* BOTONES / COTIZACIÓN */}
         <div className="mt-auto pt-2 pb-4">
           {!cotizacion ? (
             <Button
@@ -243,18 +208,8 @@ export default function FormularioCotizador({
                     </div>
                   </div>
                   <Button
-                    onClick={() => {
-                      sessionStorage.setItem(
-                        "draft_envio",
-                        JSON.stringify({
-                          origen,
-                          destino,
-                          tamanoSeleccionado,
-                          cotizacion,
-                        }),
-                      );
-                      router.push("/cliente/cotizar/resumen");
-                    }}
+                    onClick={handleSolicitarEnvio}
+                    type="button"
                     className="w-full h-11 text-base font-bold bg-amber-400 text-slate-900 hover:bg-amber-500 rounded-xl shadow-md group"
                   >
                     Solicitar Envío{" "}

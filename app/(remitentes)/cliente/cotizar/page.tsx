@@ -1,16 +1,16 @@
 "use client";
 
+import { useState } from "react";
+import { Ubicacion } from "@/shared/types/ubicacion";
+import { useMapboxRoute } from "@/features/remitente/hooks/useMapboxRoute";
 import FormularioCotizador from "@/components/cliente/FormularioCotizador";
 import MapaRuta from "@/components/cliente/MapaRuta";
-import { useMapboxRoute } from "@/features/remitente/hooks/useMapboxRoute";
-import { Ubicacion } from "@/shared/types/ubicacion";
-import { useState } from "react";
 
 export default function CotizarPage() {
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
-  const [origen, setOrigen] = useState<Ubicacion>(null);
-  const [destino, setDestino] = useState<Ubicacion>(null);
+  const [origen, setOrigen] = useState<Ubicacion | null>(null);
+  const [destino, setDestino] = useState<Ubicacion | null>(null);
 
   const geometriaRuta = useMapboxRoute(origen, destino, mapboxToken);
 
