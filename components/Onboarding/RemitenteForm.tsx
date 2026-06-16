@@ -1,34 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useValidarDni } from "@/features/landing/context/onboardingContent";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useOnboardingRemitente } from "@/features/landing/hooks/useOnboardingRemitente";
+import { useValidarDni } from "@/features/landing/hooks/useValidarDni";
 
-export default function RemitenteForm() {
-  const router = useRouter();
-  const [dni, setDni] = useState("");
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { errorDni, validarDni, setErrorDni } = useValidarDni();
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    if (!validarDni(dni)) {
-      setIsSubmitting(false);
-      return;
-    }
-
-    // TODO: Crear usuario Remitente en el backend
-    setTimeout(() => {
-      router.push("/cliente");
-    }, 1500);
-  };
+export function RemitenteForm({ onExito }: { onExito: () => void }) {
+  const {
+    dni,
+    setDni,
+    errorDni,
+    setErrorDni,
+    isSubmitting,
+    handleSubmit,
+    validarDni,
+  } = useOnboardingRemitente(onExito);
 
   return (
     <div className="w-full max-w-md bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-slate-100">

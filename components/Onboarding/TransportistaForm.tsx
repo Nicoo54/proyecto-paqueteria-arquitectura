@@ -1,58 +1,42 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PatenteSchema } from "@/schema/onboarding";
 import SelectorVehiculo from "./SelectorVehiculo";
-import { useValidarDni } from "@/features/landing/context/onboardingContent";
+import { useOnboardingTransportista } from "@/features/landing/hooks/useOnboardingTransportista";
 
-export default function TransportistaForm() {
-  const router = useRouter();
-
-  const [dni, setDni] = useState("");
-  const [categoria, setCategoria] = useState<string>("");
-  const [patente, setPatente] = useState("");
-  const [errorPatente, setErrorPatente] = useState<string | null>(null);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { errorDni, validarDni, setErrorDni } = useValidarDni();
-
-  const validarPatente = (valor: string) => {
-    const resultado = PatenteSchema.safeParse({ patente: valor });
-    if (!resultado.success) {
-      setErrorPatente(resultado.error.issues[0].message);
-      return false;
-    }
-    setErrorPatente(null);
-    return true;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    if (!validarDni(dni)) {
-      setIsSubmitting(false);
-      return;
-    }
-
-    // TODO: Cambiar por validacion real
-    if (categoria && categoria !== "BICI") {
-      if (!validarPatente(patente)) {
-        setIsSubmitting(false);
-        return;
-      }
-    }
-
-    // TODO: Crear usuario Transportista y Vehículo en el backend
-    setTimeout(() => {
-      router.push("/transportistas");
-    }, 1500);
-  };
+export default function TransportistaForm({
+  onExito,
+}: {
+  onExito: () => void;
+}) {
+  const {
+    dni,
+    setDni,
+    categoria,
+    setCategoria,
+    patente,
+    setPatente,
+    aliasBancario,
+    setAliasBancario,
+    requierePatente,
+    errorDni,
+    setErrorDni,
+    errorPatente,
+    setErrorPatente,
+    errorCategoria,
+    setErrorCategoria,
+    errorAliasBancario,
+    setErrorAliasBancario,
+    errorGeneral,
+    isSubmitting,
+    handleSubmit,
+    validarDni,
+    validarPatente,
+    validarAliasBancario,
+  } = useOnboardingTransportista(onExito);
 
   return (
     <div className="w-full max-w-md bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-slate-100">
@@ -66,6 +50,7 @@ export default function TransportistaForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* DNI */}
         <div className="space-y-2">
           <Label htmlFor="dni" className="text-sm font-semibold text-slate-900">
             DNI
@@ -87,6 +72,7 @@ export default function TransportistaForm() {
           )}
         </div>
 
+        {/* VEHÍCULO */}
         <Suspense
           fallback={
             <div className="space-y-3 pt-2">
@@ -94,20 +80,28 @@ export default function TransportistaForm() {
                 ¿Qué vehículo usás?
               </Label>
               <div className="flex items-center justify-center py-6 border-2 border-dashed border-slate-100 rounded-xl">
-                <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
               </div>
             </div>
           }
         >
           <SelectorVehiculo
             categoriaSeleccionada={categoria}
-            onChange={setCategoria}
+            onChange={(val) => {
+              setCategoria(val);
+              if (errorCategoria) setErrorCategoria(null);
+            }}
             limpiarError={() => setErrorPatente(null)}
           />
         </Suspense>
+        {errorCategoria && (
+          <p className="text-sm text-red-500 font-medium -mt-4">
+            {errorCategoria}
+          </p>
+        )}
 
-        {/* TODO: Cambiar por validacion real */}
-        {categoria && categoria !== "BICI" && (
+        {/* PATENTE — solo si no es BICI y hay categoría seleccionada */}
+        {requierePatente && (
           <div className="space-y-2 animate-in fade-in slide-in-from-top-2 pt-2">
             <Label
               htmlFor="patente"
@@ -130,6 +124,41 @@ export default function TransportistaForm() {
               <p className="text-sm text-red-500 font-medium">{errorPatente}</p>
             )}
           </div>
+        )}
+
+        {/* CBU / CVU / ALIAS */}
+        <div className="space-y-2">
+          <Label
+            htmlFor="aliasBancario"
+            className="text-sm font-semibold text-slate-900"
+          >
+            CBU, CVU o Alias bancario
+          </Label>
+          <Input
+            id="aliasBancario"
+            placeholder="banco.nombre.apellido o 22 dígitos"
+            value={aliasBancario}
+            onChange={(e) => {
+              setAliasBancario(e.target.value);
+              if (errorAliasBancario) setErrorAliasBancario(null);
+            }}
+            onBlur={(e) => validarAliasBancario(e.target.value)}
+            className={`h-12 text-lg bg-slate-50 ${errorAliasBancario ? "border-red-500" : "border-slate-200"}`}
+          />
+          {errorAliasBancario && (
+            <p className="text-sm text-red-500 font-medium">
+              {errorAliasBancario}
+            </p>
+          )}
+          <p className="text-xs text-slate-400">
+            Lo usamos para acreditarte las ganancias de cada viaje.
+          </p>
+        </div>
+
+        {errorGeneral && (
+          <p className="text-sm text-red-500 font-medium text-center">
+            {errorGeneral}
+          </p>
         )}
 
         <Button
