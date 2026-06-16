@@ -1,5 +1,5 @@
-import { Button } from "@base-ui/react";
-import { Card, CardContent } from "../ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { CreditCard, ShieldCheck } from "lucide-react";
 
 export default function PanelPago({
@@ -49,8 +49,7 @@ export default function PanelPago({
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <CreditCard className="w-5 h-5" />
-                Pagar con MercadoPago
+                <CreditCard className="w-5 h-5" /> Pagar con MercadoPago
               </div>
             )}
           </Button>
