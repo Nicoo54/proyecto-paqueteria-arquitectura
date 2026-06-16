@@ -13,44 +13,10 @@ import {
   Activity,
   CloudSun,
   Navigation,
+  Star,
 } from "lucide-react";
 
-interface EnvioDetalle {
-  codigo_envio: string;
-  categoria_paquete: string;
-  origen_direccion: string;
-  destino_direccion: string;
-  condicion_climatica: string;
-  estado: string;
-  costo: number;
-  created_at: string;
-  transportista?: { nombre: string; vehiculo: string; rating: number };
-}
-
-// TODO: Agregar para calificar despues de la entrega
-
-// SIMULACIÓN: Simula una consulta GET /api/envios/:id
-const fetchDetalleEnvio = async (id: string): Promise<EnvioDetalle> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        codigo_envio: id,
-        categoria_paquete: "Mediano (M)",
-        origen_direccion: "Mitre 150, Bahía Blanca, Buenos Aires",
-        destino_direccion: "Av. Alem 1253, Bahía Blanca, Buenos Aires",
-        condicion_climatica: "Despejado, 18°C",
-        estado: "ENTREGADO",
-        costo: 1850.5,
-        created_at: "12 de Junio de 2026 a las 14:32",
-        transportista: {
-          nombre: "Carlos M.",
-          vehiculo: "Honda Titan (AB123CD)",
-          rating: 4.8,
-        },
-      });
-    }, 400);
-  });
-};
+import { useDetalleEnvio } from "@/features/remitente/hooks/useDetalleEnvio";
 
 export default function DetalleHistorialPage({
   params,
@@ -61,16 +27,29 @@ export default function DetalleHistorialPage({
   const id = resolvedParams.id;
 
   const router = useRouter();
-  const [envio, setEnvio] = useState<EnvioDetalle | null>(null);
 
-  useEffect(() => {
-    fetchDetalleEnvio(id).then(setEnvio);
-  }, [id]);
+  const { envio, isLoading, error } = useDetalleEnvio(id);
 
-  if (!envio) {
+  if (isLoading) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
+      <div className="flex h-[50vh] items-center justify-center w-full">
+        <div className="w-10 h-10 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !envio) {
+    return (
+      <div className="flex flex-col h-[50vh] items-center justify-center w-full text-center">
+        <p className="text-rose-500 font-bold mb-4">
+          {error || "Envío no encontrado"}
+        </p>
+        <Button
+          variant="outline"
+          onClick={() => router.push("/cliente/historial")}
+        >
+          Volver al historial
+        </Button>
       </div>
     );
   }
@@ -84,7 +63,7 @@ export default function DetalleHistorialPage({
         <ArrowLeft className="w-4 h-4 mr-2" /> Volver al historial
       </button>
 
-      {/* TITLE BLOC */}
+      {/* BLOQUE DE TÍTULO */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-100">
         <div>
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">
@@ -111,7 +90,7 @@ export default function DetalleHistorialPage({
       <div className="grid grid-cols-1 gap-6">
         <Card className="border-slate-200 shadow-sm rounded-2xl overflow-hidden bg-white">
           <CardContent className="p-6 md:p-8 space-y-8">
-            {/* ITEM 1: RUTA */}
+            {/* RUTA */}
             <div className="space-y-4">
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                 <MapPin className="w-4 h-4 text-slate-400" /> Trayecto del
@@ -201,14 +180,19 @@ export default function DetalleHistorialPage({
                     Estado de Operación
                   </span>
                   <p className="font-bold text-slate-900 text-sm mt-0.5 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                    {envio.estado === "EN_CAMINO" && (
+                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                    )}
+                    {envio.estado === "ENTREGADO" && (
+                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                    )}
                     {envio.estado.replace("_", " ")}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* ITEM 3: TRANSPORTISTA (CONDICIONAL - SI APLICA) */}
+            {/* TRANSPORTISTA */}
             <div className="pt-6 border-t border-slate-100">
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mb-3">
                 <User className="w-4 h-4 text-slate-400" /> Transportista
@@ -236,12 +220,29 @@ export default function DetalleHistorialPage({
                 </div>
               )}
             </div>
+
+            {/* TODO: SISTEMA DE CALIFICACIÓN */}
+            {envio.estado === "ENTREGADO" && envio.transportista && (
+              <div className="pt-6 border-t border-slate-100">
+                <div className="bg-amber-50 rounded-xl p-4 border border-amber-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div>
+                    <p className="font-bold text-amber-900 text-sm">
+                      ¿Cómo fue tu experiencia?
+                    </p>
+                    <p className="text-xs text-amber-700">
+                      Calificá a {envio.transportista.nombre} para ayudar a la
+                      comunidad.
+                    </p>
+                  </div>
+                  <Button className="bg-amber-400 text-slate-900 hover:bg-amber-500 font-bold w-full sm:w-auto">
+                    <Star className="w-4 h-4 mr-2" /> Calificar Viaje
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
     </div>
   );
 }
-
-// Pequeña función auxiliar obligatoria para Next15 Client Side Hooks
-import { useEffect, useState } from "react";
