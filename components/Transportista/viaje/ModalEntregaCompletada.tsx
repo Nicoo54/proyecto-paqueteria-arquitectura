@@ -14,12 +14,15 @@ export function ModalEntregaCompletada({
   onContinuar,
 }: Props) {
   return (
-    <Dialog open={open}>
+    <Dialog
+      open={open}
+      onOpenChange={(nuevoEstado) => {
+        if (!nuevoEstado) return;
+      }}
+    >
       <DialogContent
         className="sm:max-w-sm bg-white p-0 overflow-hidden rounded-3xl border-slate-200"
-        // Evita que se cierre clickeando afuera o con Escape
-        onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => e.preventDefault()}
+        showCloseButton={false}
       >
         <div className="bg-emerald-500 p-8 text-center text-white">
           <CheckCircle2 className="w-16 h-16 mx-auto mb-3" />
