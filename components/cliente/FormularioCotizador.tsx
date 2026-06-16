@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
-import { Ubicacion } from "@/features/remitente/types";
 import SelectorTamanos from "./SelectorTamanos";
 import dynamic from "next/dynamic";
+import { Ubicacion } from "@/shared/types/ubicacion";
 
 const SearchBox = dynamic(
   () => import("@mapbox/search-js-react").then((mod) => mod.SearchBox),

@@ -1,14 +1,14 @@
 "use client";
 
+import { Ubicacion } from "@/shared/types/ubicacion";
 import { createContext, useContext, useEffect, useState } from "react";
-
-type Ubicacion = { lat: number; lng: number };
+import { Coordenada } from "../viaje/types";
 
 interface EstadoTransportistaContextType {
   isOnline: boolean;
   enViaje: boolean;
   gpsHabilitado: boolean;
-  ubicacion: Ubicacion | null;
+  ubicacion: Coordenada | null;
   toggleOnline: () => void;
   marcarEnViaje: (activo: boolean) => void;
 }
@@ -24,7 +24,7 @@ export function EstadoTransportistaProvider({
   const [isOnline, setIsOnline] = useState(false);
   const [enViaje, setEnViaje] = useState(false);
   const [gpsHabilitado, setGpsHabilitado] = useState(false);
-  const [ubicacion, setUbicacion] = useState<Ubicacion | null>(null);
+  const [ubicacion, setUbicacion] = useState<Coordenada | null>(null);
 
   // Monitorea si el permiso de ubicación está otorgado, y reacciona si lo revocan
   useEffect(() => {

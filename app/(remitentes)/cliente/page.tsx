@@ -1,36 +1,25 @@
+"use client";
+
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server";
 import { Button } from "@/components/ui/button";
 import { MapPin, Navigation, PackageCheck } from "lucide-react";
+import { useEnvioActivo } from "@/features/remitente/hooks/useEnvioActivo";
 
 const metadata = {
   title: "Cliente menu principal - Packeteer",
   description: "Panel de control para clientes de Packeteer",
 };
 
-const envioActivo = !true;
+export default function ClienteDashboardPage() {
+  const { envioActivo, isLoading } = useEnvioActivo();
 
-async function fetchEnvioActivo(userId: string) {
-  // Simulamos tiempo de consulta a DB
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
-  if (!envioActivo) return null;
-
-  return {
-    id: "ENV-8472",
-    estado: "EN_CAMINO",
-    origen: "Av. Alem 1253",
-    destino: "Sarmiento 456",
-    chofer: { nombre: "Carlos M.", vehiculo: "Moto (AB123CD)", rating: 4.8 },
-    eta: "15 min",
-  };
-}
-
-export default async function ClienteDashboardPage() {
-  const { userId } = await auth();
-  if (!userId) return null;
-
-  const envioActivo = await fetchEnvioActivo(userId);
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
+        <div className="w-10 h-10 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] w-full animate-in fade-in duration-500">

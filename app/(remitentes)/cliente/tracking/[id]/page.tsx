@@ -15,8 +15,8 @@ import {
   ChevronUp,
   Clock,
 } from "lucide-react";
-import { EnvioDB } from "@/features/remitente/types";
 import HeaderTracking from "@/components/cliente/tracking/HeaderTracking";
+import { EnvioDB } from "@/features/remitente/types/envios";
 
 const fetchEnvio = async (id: string): Promise<EnvioDB> => {
   return new Promise((resolve) => {

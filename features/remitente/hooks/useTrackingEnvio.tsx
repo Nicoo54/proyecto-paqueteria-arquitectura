@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { EnvioDB } from "../../../features/remitente/types";
+import { EnvioDB } from "../types/envios";
 
 interface Coordenada {
   lat: number;

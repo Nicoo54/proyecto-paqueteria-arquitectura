@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import ResumenRuta from "@/components/cliente/ResumenRuta";
 import PanelPago from "@/components/cliente/PanelPago";
-import { Ubicacion } from "@/features/remitente/types";
+import { Ubicacion } from "@/shared/types/ubicacion";
 
 interface DraftEnvio {
   origen: Ubicacion;

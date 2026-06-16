@@ -3,7 +3,7 @@
 import FormularioCotizador from "@/components/cliente/FormularioCotizador";
 import MapaRuta from "@/components/cliente/MapaRuta";
 import { useMapboxRoute } from "@/features/remitente/hooks/useMapboxRoute";
-import { Ubicacion } from "@/features/remitente/types";
+import { Ubicacion } from "@/shared/types/ubicacion";
 import { useState } from "react";
 
 export default function CotizarPage() {

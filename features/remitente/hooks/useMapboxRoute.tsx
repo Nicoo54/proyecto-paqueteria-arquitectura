@@ -1,5 +1,5 @@
+import { Ubicacion } from "@/shared/types/ubicacion";
 import { useState, useEffect } from "react";
-import { Ubicacion } from "../../../features/remitente/types";
 
 // Hook personalizado para obtener la ruta entre origen y destino usando Mapbox Directions API
 export function useMapboxRoute(

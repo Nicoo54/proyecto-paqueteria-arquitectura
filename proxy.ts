@@ -37,7 +37,7 @@ export default clerkMiddleware(async (auth, req) => {
   // Cambiar a true si se quiere acceder a la pag de cada usuario
   // al implementar backend no tocar.
   const onboardingCompleto =
-    (user.publicMetadata?.onboardingCompleto as boolean) ?? false;
+    (user.publicMetadata?.onboardingCompleto as boolean) ?? true;
 
   // Caso 2. Onboarding incompleto → solo puede estar en /onboarding o /
   if (!onboardingCompleto) {
