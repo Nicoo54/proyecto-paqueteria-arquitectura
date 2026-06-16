@@ -6,9 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function distanciaKm(a: Coordenada | null, b: Coordenada | null) {
-  if (!a || !b) return null;
-
+export function distanciaKm(a: Coordenada, b: Coordenada) {
   const R = 6371;
   const dLat = ((b.lat - a.lat) * Math.PI) / 180;
   const dLng = ((b.lng - a.lng) * Math.PI) / 180;
