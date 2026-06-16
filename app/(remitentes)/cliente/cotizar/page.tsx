@@ -2,7 +2,7 @@
 
 import FormularioCotizador from "@/components/cliente/FormularioCotizador";
 import MapaRuta from "@/components/cliente/MapaRuta";
-import { useMapboxRoute } from "@/lib/cliente/hooks/useMapboxRoute";
+import { useMapboxRoute } from "@/features/remitente/hooks/useMapboxRoute";
 import { Ubicacion } from "@/features/remitente/types";
 import { useState } from "react";
 
