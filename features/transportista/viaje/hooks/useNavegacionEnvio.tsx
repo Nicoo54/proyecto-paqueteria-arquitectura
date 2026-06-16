@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { EnvioDB, Fase } from "../types";
-import { actualizarEstadoEnvio, fetchEnvio } from "../api";
+import { viajeService } from "../services/viajeService";
 
 export function useNavegacionEnvio(id: string) {
   const [envio, setEnvio] = useState<EnvioDB | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
-    fetchEnvio(id).then(setEnvio);
+    viajeService.fetchEnvio(id).then(setEnvio);
   }, [id]);
 
   const fase: Fase | null = !envio
@@ -39,7 +39,7 @@ export function useNavegacionEnvio(id: string) {
     const nuevoEstado = fase === "HACIA_RETIRO" ? "EN_CAMINO" : "ENTREGADO";
 
     try {
-      await actualizarEstadoEnvio(envio.codigo_envio, nuevoEstado);
+      await viajeService.actualizarEstadoEnvio(envio.codigo_envio, nuevoEstado);
       setEnvio({ ...envio, estado: nuevoEstado });
     } finally {
       setIsUpdating(false);
