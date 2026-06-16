@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useEstadoTransportista } from "../context/EstadoTransportistaProvider";
 import { PaqueteDisponible } from "../types/types";
-import { fetchPaquetesDisponibles, fetchViajeActivo } from "./mocks";
+import { fetchPaquetesDisponibles, fetchViajeActivo } from "../mocks";
 
 export function useRadarTransportista() {
   const { isOnline } = useEstadoTransportista();
