@@ -2,46 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { EnvioHistorial } from "@/features/remitente/types/historial";
 import { Eye, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-// TODO: Cambiar por consulta real
-const historialMock = [
-  {
-    codigo_envio: "1004",
-    fecha: "12 Jun, 2026",
-    destino: "Av. Alem 1253",
-    categoria: "M",
-    costo: 1850.5,
-    estado: "EN_CAMINO",
-  },
-  {
-    codigo_envio: "1003",
-    fecha: "10 Jun, 2026",
-    destino: "Mitre 150",
-    categoria: "S",
-    costo: 1200.0,
-    estado: "ENTREGADO",
-  },
-  {
-    codigo_envio: "1002",
-    fecha: "05 Jun, 2026",
-    destino: "Av. Colon 432",
-    categoria: "L",
-    costo: 2900.0,
-    estado: "ENTREGADO",
-  },
-  {
-    codigo_envio: "1001",
-    fecha: "01 Jun, 2026",
-    destino: "Estomba 88",
-    categoria: "M",
-    costo: 1850.5,
-    estado: "CANCELADO",
-  },
-];
-
-// TODO: Cambiar por algo unificado
 const getBadgeStyles = (estado: string) => {
   switch (estado) {
     case "ENTREGADO":
@@ -55,7 +19,11 @@ const getBadgeStyles = (estado: string) => {
   }
 };
 
-export default function EnviosTabla() {
+interface EnviosTablaProps {
+  envios: EnvioHistorial[];
+}
+
+export default function EnviosTabla({ envios }: EnviosTablaProps) {
   const router = useRouter();
 
   return (
@@ -65,7 +33,7 @@ export default function EnviosTabla() {
           <table className="w-full text-sm text-left border-collapse">
             <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-200 text-xs uppercase tracking-wider">
               <tr>
-                <th className="px-6 py-4">ID Envió</th>
+                <th className="px-6 py-4">ID Envío</th>
                 <th className="px-6 py-4">Fecha</th>
                 <th className="px-6 py-4">Destino de Entrega</th>
                 <th className="px-6 py-4">Paquete</th>
@@ -75,7 +43,7 @@ export default function EnviosTabla() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-700">
-              {historialMock.map((envio) => (
+              {envios.map((envio) => (
                 <tr
                   key={envio.codigo_envio}
                   className="hover:bg-slate-50/60 transition-colors"
@@ -122,7 +90,7 @@ export default function EnviosTabla() {
             </tbody>
           </table>
         </div>
-        {historialMock.length === 0 && (
+        {envios.length === 0 && (
           <div className="p-12 text-center text-slate-400 font-medium">
             Aún no registraste ninguna operación en la plataforma.
           </div>
