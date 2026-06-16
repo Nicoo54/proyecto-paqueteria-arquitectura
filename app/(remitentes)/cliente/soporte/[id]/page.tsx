@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,50 +9,10 @@ import {
   Package,
   User,
   CheckCircle2,
-  AlertCircle,
   Clock,
   ExternalLink,
 } from "lucide-react";
-
-interface TicketDetalle {
-  id: string;
-  envio_id: string;
-  asunto: string;
-  descripcion: string;
-  estado: string; // 'ABIERTO', 'EN_PROGRESO', 'RESUELTO'
-  fecha_creacion: string;
-  soporte?: {
-    nombre: string;
-    comentario: string;
-    conclusion?: string;
-    fecha_respuesta: string;
-  };
-}
-
-// TODO: CAMBIAR POR FECH A API REAL
-const fetchDetalleTicket = async (id: string): Promise<TicketDetalle> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        id: id,
-        envio_id: "1004",
-        asunto: "Paquete dañado",
-        descripcion:
-          "Hola, el conductor me entregó el paquete pero la caja estaba abollada en una de las esquinas. Necesito saber cómo proceder con el seguro de carga.",
-        estado: "ABIERTO",
-        fecha_creacion: "15 de Junio de 2026 a las 09:15",
-        soporte: {
-          nombre: "María L.",
-          comentario:
-            "Hola, lamentamos el inconveniente. Por favor, subí 3 fotos de la caja y del producto en su interior a este mismo hilo para activar la póliza con nuestra aseguradora.",
-          conclusion:
-            "Se aprobaron las fotos y se emitió el reembolso total a tu cuenta de MercadoPago. El caso queda cerrado.",
-          fecha_respuesta: "15 de Junio de 2026 a las 11:30",
-        },
-      });
-    }, 500);
-  });
-};
+import { useDetalleTicket } from "@/features/remitente/hooks/useDetalleTicket";
 
 export default function DetalleTicketPage({
   params,
@@ -63,16 +23,29 @@ export default function DetalleTicketPage({
   const id = resolvedParams.id;
 
   const router = useRouter();
-  const [ticket, setTicket] = useState<TicketDetalle | null>(null);
 
-  useEffect(() => {
-    fetchDetalleTicket(id).then(setTicket);
-  }, [id]);
+  const { ticket, isLoading, error } = useDetalleTicket(id);
 
-  if (!ticket) {
+  if (isLoading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
         <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !ticket) {
+    return (
+      <div className="flex flex-col h-[50vh] items-center justify-center w-full text-center">
+        <p className="text-rose-500 font-bold mb-4">
+          {error || "Ticket no encontrado"}
+        </p>
+        <Button
+          variant="outline"
+          onClick={() => router.push("/cliente/soporte")}
+        >
+          Volver a soporte
+        </Button>
       </div>
     );
   }
@@ -193,8 +166,8 @@ export default function DetalleTicketPage({
               Tu ticket está en la fila
             </h3>
             <p className="text-sm text-slate-500 max-w-sm mx-auto">
-              Un miembro de nuestro equipo de soporte (Soporte) tomará tu caso y
-              te responderá por este medio a la brevedad.
+              Un miembro de nuestro equipo de soporte tomará tu caso y te
+              responderá por este medio a la brevedad.
             </p>
           </div>
         )}
