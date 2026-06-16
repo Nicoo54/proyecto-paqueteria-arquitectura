@@ -11,8 +11,6 @@ export default function LandingHeader() {
 
         <nav className="flex items-center gap-6">
           <AnonimousActions />
-
-          <UserActions />
         </nav>
       </div>
     </header>
@@ -30,29 +28,6 @@ function AnonimousActions() {
           Iniciar Sesión
         </Button>
       </SignInButton>
-    </Show>
-  );
-}
-
-function UserActions() {
-  return (
-    <Show when="signed-in">
-      <Link
-        href="/onboarding"
-        className="text-sm font-semibold text-slate-600 hover:text-amber-600 transition-colors mr-2"
-      >
-        Mi Panel
-      </Link>
-      <div className="border-l border-slate-200 pl-4 h-6 flex items-center">
-        <UserButton
-          appearance={{
-            elements: {
-              userButtonAvatarBox:
-                "w-8 h-8 rounded-full border border-slate-200 shadow-sm",
-            },
-          }}
-        />
-      </div>
     </Show>
   );
 }
