@@ -1,4 +1,4 @@
-import type { PrismaClient } from "@prisma/client";
+import type { CategoriaPaqueteEnum, PrismaClient } from "@prisma/client";
 import type { Envio } from "../../domain/envio/types";
 import type { Dni, EnvioId } from "../../domain/types";
 import { distanciaKilometros } from "../../domain/geo/haversine";
@@ -42,7 +42,7 @@ export class PrismaEnvioRepository implements EnvioRepository {
     const candidatos = await this.db.envio.findMany({
       where: {
         estado: "BUSCANDO",
-        categoriaPaquete: { in: filtro.categoriasAdmitidas as unknown as string[] },
+        categoriaPaquete: { in: filtro.categoriasAdmitidas as readonly CategoriaPaqueteEnum[] as CategoriaPaqueteEnum[] },
         origenLat: { gte: filtro.posicion.lat - deltaLat, lte: filtro.posicion.lat + deltaLat },
         origenLng: { gte: filtro.posicion.lng - deltaLng, lte: filtro.posicion.lng + deltaLng },
       },

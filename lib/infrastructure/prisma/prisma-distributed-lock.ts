@@ -5,14 +5,15 @@ import type {
 } from "../../application/ports/distributed-lock";
 
 function hashFNV1a(input: string): bigint {
-  let hash = 0xcbf29ce484222325n;
-  const prime = 0x100000001b3n;
-  const mask = 0xffffffffffffffffn;
+  let hash = BigInt("0xcbf29ce484222325");
+  const prime = BigInt("0x100000001b3");
+  const mask = BigInt("0xffffffffffffffff");
+  const positiveMask = BigInt("0x7fffffffffffffff");
   for (let i = 0; i < input.length; i++) {
     hash = (hash ^ BigInt(input.charCodeAt(i))) & mask;
     hash = (hash * prime) & mask;
   }
-  return hash & 0x7fffffffffffffffn;
+  return hash & positiveMask;
 }
 
 export class PrismaDistributedLock implements DistributedLock {

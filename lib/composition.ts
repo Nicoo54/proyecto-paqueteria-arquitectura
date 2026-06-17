@@ -9,6 +9,7 @@ import {
   PrismaUsuarioRepository,
   PrismaVehiculoRepository,
 } from "./infrastructure/prisma";
+import { FakePasarelaDePagos } from "./infrastructure/pasarela";
 import { RelojSistema } from "./application/ports/reloj";
 import {
   AceptarEnvioUseCase,
@@ -19,6 +20,7 @@ import {
   ExplorarEnviosUseCase,
   RegistrarVehiculoUseCase,
 } from "./application/use-cases/transportista";
+import { LiquidarPagosNocturnaUseCase } from "./application/use-cases/liquidacion";
 
 export function crearDependenciasTransportista() {
   const transportistas = new PrismaTransportistaRepository(prisma);
@@ -30,10 +32,11 @@ export function crearDependenciasTransportista() {
   const authenticator = new ClerkAuthenticator();
   const lock = new PrismaDistributedLock(prisma);
   const reloj = new RelojSistema();
+  const pasarela = new FakePasarelaDePagos();
 
   return {
     repositorios: { transportistas, vehiculos, envios, transacciones, usuarios },
-    ports: { authenticator, lock, reloj, uow },
+    ports: { authenticator, lock, reloj, uow, pasarela },
     casosDeUso: {
       aceptarEnvio: new AceptarEnvioUseCase(transportistas, envios, uow),
       actualizarDisponibilidad: new ActualizarDisponibilidadUseCase(transportistas),
@@ -42,6 +45,13 @@ export function crearDependenciasTransportista() {
       actualizarVehiculo: new ActualizarVehiculoUseCase(vehiculos),
       explorarEnvios: new ExplorarEnviosUseCase(transportistas, envios),
       registrarVehiculo: new RegistrarVehiculoUseCase(vehiculos),
+      liquidarPagosNocturna: new LiquidarPagosNocturnaUseCase({
+        transacciones,
+        pasarela,
+        lock,
+        uow,
+        reloj,
+      }),
     },
   };
 }
