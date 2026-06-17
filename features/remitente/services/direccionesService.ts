@@ -1,12 +1,5 @@
 import { Ubicacion } from "@/shared/types/ubicacion";
-
-export type DireccionGuardada = {
-  id_direccion: number;
-  direccion: string;
-  ciudad: string | null;
-  origen_lat: number;
-  origen_lng: number;
-};
+import { DireccionGuardada, NuevaDireccionPayload } from "../types/direccione";
 
 // TODO: Cambiar a API real cuando esté lista
 export const direccionesService = {
@@ -33,6 +26,12 @@ export const direccionesService = {
         600,
       ),
     );
+  },
+
+  async guardarDireccion(payload: NuevaDireccionPayload): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(), 800);
+    });
   },
 };
 

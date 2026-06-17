@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  DireccionGuardada,
-  direccionAUbicacion,
-} from "@/features/remitente/services/direccionesService";
+import { direccionAUbicacion } from "@/features/remitente/services/direccionesService";
 import { useDireccionesGuardadas } from "@/features/remitente/hooks/useDireccionesGuardadas";
 import { Ubicacion } from "@/shared/types/ubicacion";
 import { MapPin } from "lucide-react";

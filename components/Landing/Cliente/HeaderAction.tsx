@@ -1,13 +1,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Clock, HelpCircle, Package } from "lucide-react";
+import { Clock, HelpCircle, MapPin, Package } from "lucide-react";
 import Link from "next/link";
 
 const routes = [
   { href: "/cliente", icon: Package, text: "Inicio" },
   { href: "/cliente/historial", icon: Clock, text: "Historial" },
   { href: "/cliente/soporte", icon: HelpCircle, text: "Soporte" },
+  { href: "/cliente/direcciones", icon: MapPin, text: "Direcciones" },
 ];
 
 export default function ClienteHeader() {
