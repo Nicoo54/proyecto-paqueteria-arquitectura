@@ -14,3 +14,12 @@ export interface TicketDetalle {
   fecha_creacion: string;
   soporte?: SoporteAsignado;
 }
+
+export interface NuevoTicketPayload {
+  codigo_seguimiento: string;
+  motivo: string;
+}
+
+export interface NuevoTicketResponse {
+  id: string;
+}

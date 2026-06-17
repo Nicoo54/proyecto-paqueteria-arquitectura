@@ -42,9 +42,7 @@ export function useCalificacion(
   };
 
   const irASoporte = () => {
-    // Redirigimos a la pantalla de nuevo ticket
-    // TODO: Cambiar ref
-    router.push("/cliente/soporte/nuevo");
+    router.push(`/cliente/soporte/nuevo?envio=${codigoEnvio}`);
   };
 
   return {

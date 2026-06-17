@@ -11,7 +11,7 @@ export const detalleEnvioService = {
           origen_direccion: "Mitre 150, Bahía Blanca, Buenos Aires",
           destino_direccion: "Av. Alem 1253, Bahía Blanca, Buenos Aires",
           condicion_climatica: "Despejado, 18°C",
-          estado: "EN_CAMINO",
+          estado: "ENTREGADO",
           costo: 1850.5,
           created_at: "12 de Junio de 2026 a las 14:32",
           transportista: {

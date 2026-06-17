@@ -21,10 +21,6 @@ export default function HeaderSoporteCliente() {
           Historial de tus consultas y reclamos técnicos.
         </p>
       </div>
-
-      <Button className="rounded-xl font-bold bg-amber-400 text-slate-900 hover:bg-amber-500 shadow-sm h-11 px-6">
-        <MessageSquarePlus className="w-4 h-4 mr-2" /> Nuevo Ticket
-      </Button>
     </div>
   );
 }
