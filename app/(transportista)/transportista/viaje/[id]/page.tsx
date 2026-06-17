@@ -34,6 +34,14 @@ export default function NavegacionViajePage({
 
   const { ubicacion, error: errorGps } = useUbicacion(destinoActual);
 
+  if (!envio || !fase || !destinoActual) {
+    return (
+      <div className="flex flex-1 items-center justify-center bg-slate-50">
+        <div className="w-10 h-10 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   const distanciaAlDestino = ubicacion
     ? distanciaKm(ubicacion, destinoActual)
     : null;
@@ -70,14 +78,6 @@ export default function NavegacionViajePage({
   const handleContinuarDesdeModal = () => {
     router.push("/transportista");
   };
-
-  if (!envio || !fase || !destinoActual) {
-    return (
-      <div className="flex flex-1 items-center justify-center bg-slate-50">
-        <div className="w-10 h-10 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
 
   return (
     <div className="relative flex-1 min-h-0 w-full overflow-hidden bg-slate-200">
