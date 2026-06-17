@@ -34,6 +34,21 @@ export default function NavegacionViajePage({
 
   const { ubicacion, error: errorGps } = useUbicacion(destinoActual);
 
+  const { geometria, distanciaTexto, duracionTexto } = useRutaMapbox(
+    ubicacion,
+    destinoActual,
+    mapboxToken,
+  );
+
+  const { marcarEnViaje } = useEstadoTransportista();
+
+  const [mostrarModalEntrega, setMostrarModalEntrega] = useState(false);
+
+  useEffect(() => {
+    marcarEnViaje(true);
+    return () => marcarEnViaje(false);
+  }, []);
+
   if (!envio || !fase || !destinoActual) {
     return (
       <div className="flex flex-1 items-center justify-center bg-slate-50">
@@ -50,21 +65,6 @@ export default function NavegacionViajePage({
     ubicacion !== null &&
     distanciaAlDestino !== null &&
     distanciaAlDestino <= DISTANCIA_MAXIMA_CONFIRMACION_KM;
-
-  const { geometria, distanciaTexto, duracionTexto } = useRutaMapbox(
-    ubicacion,
-    destinoActual,
-    mapboxToken,
-  );
-
-  const { marcarEnViaje } = useEstadoTransportista();
-
-  useEffect(() => {
-    marcarEnViaje(true);
-    return () => marcarEnViaje(false);
-  }, []);
-
-  const [mostrarModalEntrega, setMostrarModalEntrega] = useState(false);
 
   const handleConfirmar = async () => {
     await confirmarPaso();
