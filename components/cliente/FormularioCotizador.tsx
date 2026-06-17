@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import dynamic from "next/dynamic";
 import SelectorTamanos from "./SelectorTamanos";
 import { Ubicacion } from "@/shared/types/ubicacion";
 import { useCotizador } from "@/features/remitente/hooks/useCotizador";
+import { SelectorOrigenGuardado } from "./SelectorOrigenGuardado";
 
 const SearchBox = dynamic(
   () => import("@mapbox/search-js-react").then((mod) => mod.SearchBox),
@@ -44,6 +45,8 @@ export default function FormularioCotizador({
     handleSolicitarEnvio,
   } = useCotizador(origen, destino);
 
+  const [usarOrigenGuardado, setUsarOrigenGuardado] = useState(false);
+
   const mapboxSearchTheme = {
     variables: {
       fontFamily: "inherit",
@@ -77,37 +80,66 @@ export default function FormularioCotizador({
 
           {/* ORIGEN */}
           <div className="relative z-50 space-y-1 mb-3">
-            <Label className="text-slate-900 text-sm font-bold flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-slate-900 flex items-center justify-center text-white text-xs shadow-sm">
-                A
-              </div>
-              Dirección de Retiro
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="text-slate-900 text-sm font-bold flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-slate-900 flex items-center justify-center text-white text-xs shadow-sm">
+                  A
+                </div>
+                Dirección de Retiro
+              </Label>
+              <button
+                type="button"
+                onClick={() => {
+                  setUsarOrigenGuardado(!usarOrigenGuardado);
+                  setOrigen(null); // limpiar al cambiar de modo
+                  setOrigenTexto("");
+                  setCotizacion(null);
+                }}
+                className="text-xs font-bold text-amber-600 hover:text-amber-700 underline underline-offset-2 transition-colors"
+              >
+                {usarOrigenGuardado
+                  ? "Ingresar nueva dirección"
+                  : "Usar dirección guardada"}
+              </button>
+            </div>
+
             <div className="ml-2 w-[calc(100%-8px)]">
-              <SearchBox
-                accessToken={mapboxToken}
-                theme={mapboxSearchTheme}
-                options={{
-                  language: "es",
-                  country: "AR",
-                  proximity: [-62.2663, -38.7183],
-                }}
-                placeholder="Buscar dirección de origen..."
-                value={origenTexto}
-                onChange={setOrigenTexto}
-                onRetrieve={(res) => {
-                  if (res.features?.length > 0) {
-                    const feat = res.features[0];
-                    setOrigenTexto(feat.properties.name);
-                    setOrigen({
-                      nombre: feat.properties.name,
-                      lng: feat.geometry.coordinates[0],
-                      lat: feat.geometry.coordinates[1],
-                    });
+              {usarOrigenGuardado ? (
+                <SelectorOrigenGuardado
+                  seleccionada={origen}
+                  onSeleccionar={(ubicacion) => {
+                    if (!ubicacion) return;
+                    setOrigen(ubicacion);
+                    setOrigenTexto(ubicacion.nombre);
                     setCotizacion(null);
-                  }
-                }}
-              />
+                  }}
+                />
+              ) : (
+                <SearchBox
+                  accessToken={mapboxToken}
+                  theme={mapboxSearchTheme}
+                  options={{
+                    language: "es",
+                    country: "AR",
+                    proximity: [-62.2663, -38.7183],
+                  }}
+                  placeholder="Buscar dirección de origen..."
+                  value={origenTexto}
+                  onChange={setOrigenTexto}
+                  onRetrieve={(res) => {
+                    if (res.features?.length > 0) {
+                      const feat = res.features[0];
+                      setOrigenTexto(feat.properties.name);
+                      setOrigen({
+                        nombre: feat.properties.name,
+                        lng: feat.geometry.coordinates[0],
+                        lat: feat.geometry.coordinates[1],
+                      });
+                      setCotizacion(null);
+                    }
+                  }}
+                />
+              )}
             </div>
           </div>
 
