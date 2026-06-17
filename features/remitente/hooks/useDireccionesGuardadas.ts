@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  DireccionGuardada,
-  direccionesService,
-} from "../services/direccionesService";
+import { direccionesService } from "../services/direccionesService";
+import { DireccionGuardada } from "../types/direccione";
 
 export function useDireccionesGuardadas() {
   const [direcciones, setDirecciones] = useState<DireccionGuardada[]>([]);
