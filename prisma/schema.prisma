@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model categoriapaquete {
+  categoria_paquete   String  @id @db.VarChar(20)
+  peso_maximo         Decimal @db.Decimal(10, 2)
+  multiplicador_costo Decimal @db.Decimal(10, 2)
+}
+
+model categoriavehiculo {
+  nombre_categoria String  @id @db.VarChar(20)
+  capacidad_maxima Decimal @db.Decimal(10, 2)
+}
+
+model direccion {
+  id_direccion  Int       @id @default(autoincrement())
+  remitente_dni String    @db.VarChar(10)
+  direccion     String    @db.VarChar(255)
+  ciudad        String?   @db.VarChar(100)
+  provincia     String?   @db.VarChar(100)
+  pais          String?   @db.VarChar(100)
+  codigo_postal String?   @db.VarChar(20)
+  origen_lat    Decimal   @db.Decimal(10, 8)
+  origen_lng    Decimal   @db.Decimal(10, 8)
+  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  updated_at    DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model envio {
+  codigo_envio         Int       @id @default(autoincrement())
+  categoria_paquete    String    @db.VarChar(20)
+  dni_remitente        String    @db.VarChar(10)
+  dni_transportista    String?   @db.VarChar(10)
+  codigo_zona_caliente Int?
+  origen_direccion     String    @db.VarChar(255)
+  origen_lat           Decimal   @db.Decimal(10, 8)
+  origen_lng           Decimal   @db.Decimal(10, 8)
+  destino_direccion    String    @db.VarChar(255)
+  destino_lat          Decimal   @db.Decimal(10, 8)
+  destino_lng          Decimal   @db.Decimal(10, 8)
+  condicion_climatica  String    @db.VarChar(50)
+  estado               String    @db.VarChar(20)
+  costo                Decimal   @db.Decimal(10, 2)
+  created_at           DateTime? @default(now()) @db.Timestamp(6)
+  updated_at           DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model metrica {
+  fecha_reporte            DateTime @id @db.Date
+  cantidad_envios_totales  Int
+  ganancia_neta_plataforma Decimal  @db.Decimal(10, 2)
+}
+
+model remitente {
+  dni String @id @db.VarChar(10)
+}
+
+model resena {
+  id_resena          Int       @id @default(autoincrement())
+  codigo_seguimiento Int
+  puntaje            Int       @db.SmallInt
+  comentario         String?
+  created_at         DateTime? @default(now()) @db.Timestamp(6)
+  updated_at         DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model soportetecnico {
+  dni String @id @db.VarChar(10)
+}
+
+model ticket {
+  codigo_reclamo      Int       @id @default(autoincrement())
+  codigo_seguimiento  Int
+  dni_soporte_tecnico String?   @db.VarChar(10)
+  motivo              String
+  resolucion          String?
+  estado              String    @db.VarChar(20)
+  created_at          DateTime? @default(now()) @db.Timestamp(6)
+  updated_at          DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model transaccion {
+  id_referencia_externa String    @id @db.VarChar(50)
+  codigo_seguimiento    Int
+  monto_total           Decimal   @db.Decimal(10, 2)
+  estado_pago           String    @db.VarChar(20)
+  created_at            DateTime? @default(now()) @db.Timestamp(6)
+  updated_at            DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model transportista {
+  dni                   String   @id @db.VarChar(10)
+  id_vehiculo           Int
+  alias_bancario        String   @db.VarChar(100)
+  cantidad_resenas      Int?     @default(0)
+  promedio_calificacion Decimal? @default(0.00) @db.Decimal(3, 2)
+}
+
+model usuario {
+  dni        String    @id @db.VarChar(10)
+  clerk_id   String    @unique @db.VarChar(50)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model vehiculo {
+  id           Int     @id @default(autoincrement())
+  categoria_id String  @db.VarChar(20)
+  patente      String? @unique @db.VarChar(10)
+}
+
+model zonacaliente {
+  codigo_zona_caliente  Int       @id @default(autoincrement())
+  centro_lat            Decimal   @db.Decimal(10, 8)
+  centro_lng            Decimal   @db.Decimal(10, 8)
+  radio_m               Decimal   @db.Decimal(10, 2)
+  multiplicador_precio  Decimal   @db.Decimal(10, 2)
+  fecha_vigencia_inicio DateTime  @db.Date
+  fecha_vigencia_fin    DateTime  @db.Date
+  created_at            DateTime? @default(now()) @db.Timestamp(6)
+}
