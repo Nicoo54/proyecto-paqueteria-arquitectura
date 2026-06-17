@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { useDetalleEnvio } from "@/features/remitente/hooks/useDetalleEnvio";
+import PanelCalificacion from "@/components/cliente/PanelCalificacion";
 
 export default function DetalleHistorialPage({
   params,
@@ -223,21 +224,12 @@ export default function DetalleHistorialPage({
 
             {/* TODO: SISTEMA DE CALIFICACIÓN */}
             {envio.estado === "ENTREGADO" && envio.transportista && (
-              <div className="pt-6 border-t border-slate-100">
-                <div className="bg-amber-50 rounded-xl p-4 border border-amber-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div>
-                    <p className="font-bold text-amber-900 text-sm">
-                      ¿Cómo fue tu experiencia?
-                    </p>
-                    <p className="text-xs text-amber-700">
-                      Calificá a {envio.transportista.nombre} para ayudar a la
-                      comunidad.
-                    </p>
-                  </div>
-                  <Button className="bg-amber-400 text-slate-900 hover:bg-amber-500 font-bold w-full sm:w-auto">
-                    <Star className="w-4 h-4 mr-2" /> Calificar Viaje
-                  </Button>
-                </div>
+              <div className="pt-6 border-t border-slate-100 mt-6">
+                <PanelCalificacion
+                  codigoEnvio={envio.codigo_envio}
+                  nombreTransportista={envio.transportista.nombre}
+                  resenaPrevia={envio.resena}
+                />
               </div>
             )}
           </CardContent>

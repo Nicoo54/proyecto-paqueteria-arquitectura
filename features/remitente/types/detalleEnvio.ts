@@ -14,4 +14,5 @@ export interface EnvioDetalle {
   costo: number;
   created_at: string;
   transportista?: TransportistaAsignado;
+  resena?: { puntaje: number; comentario?: string };
 }

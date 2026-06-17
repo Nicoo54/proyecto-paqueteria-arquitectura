@@ -19,6 +19,13 @@ export const detalleEnvioService = {
             vehiculo: "Honda Titan (AB123CD)",
             rating: 4.8,
           },
+          /*
+          resena: {
+            puntaje: 4,
+            comentario:
+              "Llegó rápido y en buen estado, pero el transportista fue un poco difícil de contactar.",
+          },
+          */
         });
       }, 400);
     });

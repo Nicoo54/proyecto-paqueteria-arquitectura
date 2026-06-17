@@ -14,6 +14,7 @@ export interface EnvioTracking {
   destino_lat: number;
   destino_lng: number;
   chofer?: ChoferTracking;
+  resena?: { puntaje: number; comentario?: string };
 }
 
 export interface UbicacionCoordenadas {

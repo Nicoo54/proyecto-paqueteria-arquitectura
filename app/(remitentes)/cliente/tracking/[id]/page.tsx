@@ -4,12 +4,12 @@ import { use, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Map, { Marker } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { CheckCircle2, Star, ArrowLeft } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { CheckCircle2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTracking } from "@/features/remitente/hooks/useTracking";
 import HeaderTracking from "@/components/cliente/tracking/HeaderTracking";
 import TarjetaTracking from "@/components/cliente/tracking/TarjetaTracking";
+import PanelCalificacion from "@/components/cliente/PanelCalificacion";
 
 export default function TrackingPage({
   params,
@@ -59,29 +59,13 @@ export default function TrackingPage({
         </p>
 
         {envio.chofer && (
-          <Card className="w-full max-w-sm border-slate-200 shadow-sm mb-8 text-left bg-white rounded-3xl">
-            <CardContent className="p-5">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
-                Entregado por
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-xl border border-slate-200 shrink-0">
-                  🛵
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-900 text-base">
-                    {envio.chofer.nombre}
-                  </h3>
-                  <div className="flex items-center gap-2 text-xs text-slate-500 font-medium mt-0.5">
-                    <span>{envio.chofer.vehiculo}</span>
-                  </div>
-                </div>
-              </div>
-              <Button className="w-full mt-4 bg-amber-400 text-slate-900 hover:bg-amber-500 font-bold rounded-xl h-11">
-                <Star className="w-4 h-4 mr-2" /> Calificar viaje
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="w-full max-w-sm mb-8 text-left">
+            <PanelCalificacion
+              codigoEnvio={envio.codigo_envio}
+              nombreTransportista={envio.chofer.nombre}
+              resenaPrevia={envio.resena}
+            />
+          </div>
         )}
 
         <Button
