@@ -40,7 +40,7 @@ export const transportistaOcupado: Transportista = {
 };
 
 export const transportistaSinVehiculo: Transportista = {
-  ...transportistaDisponible,
+  ...transportistaNoDisponible,
   vehiculo: null,
 };
 
