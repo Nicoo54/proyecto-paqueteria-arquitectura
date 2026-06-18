@@ -1,0 +1,5 @@
+{
+  "crons": [
+    { "path": "/api/jobs/liquidacion", "schedule": "0 3 * * *" }
+  ]
+}
