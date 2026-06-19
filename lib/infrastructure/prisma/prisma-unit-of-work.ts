@@ -5,6 +5,6 @@ export class PrismaUnitOfWork implements UnitOfWork {
   constructor(private readonly prisma: PrismaClient) {}
 
   async ejecutar<T>(fn: (tx: unknown) => Promise<T>): Promise<T> {
-    return this.prisma.$transaction(async (tx) => fn(tx));
+    return this.prisma.$transaction(async (tx: any) => fn(tx));
   }
 }

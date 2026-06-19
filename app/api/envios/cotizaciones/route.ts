@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calcularCotizacion } from '@/lib/cotizar-envio';
 import { categoriaPaqueteMediano } from '@/lib/mocks'
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Categoria de paquete invalida" }, { status: 400 });
         }
 
-        const categoria = await prisma.categoriapaquete.findUnique({ where: { categoria_paquete: categoriaPaquete } });
+        const categoria = await prisma.categoriaPaquete.findUnique({ where: { categoria: categoriaPaquete } });
 
         if (!categoria) {
             return NextResponse.json({ error: "Categoria inexistente" }, { status: 404 });
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ error: "Direccion de destino invalida" }, { status: 400 });
             }
 
-            const precioEstimado = await calcularCotizacion(Number(categoria.multiplicador_costo), origen, destino);
+            const precioEstimado = await calcularCotizacion(Number(categoria.multiplicadorCosto), origen, destino);
 
             const tiempoEstimado = await TiempoEstimado(origen, destino);
 

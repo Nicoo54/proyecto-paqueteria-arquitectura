@@ -1,4 +1,5 @@
-import type { CategoriaPaqueteEnum, PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
+type CategoriaPaqueteEnum = "S" | "M" | "L";
 import type { Envio } from "../../domain/envio/types";
 import type { Dni, EnvioId } from "../../domain/types";
 import { distanciaKilometros } from "../../domain/geo/haversine";
@@ -51,7 +52,7 @@ export class PrismaEnvioRepository implements EnvioRepository {
 
     return candidatos
       .map(envioPrismaADominio)
-      .filter((e) =>
+      .filter((e: Envio) =>
         distanciaKilometros(filtro.posicion, { lat: e.origen.lat, lng: e.origen.lng }) <= filtro.radioKm
       );
   }

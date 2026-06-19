@@ -1,56 +1,46 @@
-
-import { envio, ticket, transaccion } from '@prisma/client';
-
-export function ResponseEnvio(envio: envio) { 
-
+export function ResponseEnvio(envio: any) { 
     return {
-        categoriaPaquete: envio.categoria_paquete,
-        dniRemitente: envio.dni_remitente,
-        origenDireccion: envio.origen_direccion,
-        origenLat: envio.origen_lat,
-        origenLng: envio.origen_lng,
-        destinoDireccion: envio.destino_direccion,
-        destinoLat: envio.destino_lat,
-        destinoLng: envio.destino_lng,
-        condicionClimatica: envio.condicion_climatica,
+        id: envio.id,
+        categoriaPaquete: envio.categoriaPaquete,
+        dniRemitente: envio.remitenteDni,
+        origenDireccion: envio.origenDireccion,
+        origenLat: envio.origenLat,
+        origenLng: envio.origenLng,
+        destinoDireccion: envio.destinoDireccion,
+        destinoLat: envio.destinoLat,
+        destinoLng: envio.destinoLng,
+        condicionClimatica: envio.condicionClimatica,
         estado: envio.estado,
         costo: envio.costo,
+        tipoPago: envio.tipoPago,
 
-        ...(envio.dni_transportista !== null && {
-            transportistaDni: envio.dni_transportista,
+        ...(envio.transportistaDni !== null && {
+            transportistaDni: envio.transportistaDni,
         }),
 
-        ...(envio.codigo_zona_caliente !== null && {
-            zonaCalienteId: envio.codigo_zona_caliente,
+        ...(envio.zonaCalienteId !== null && {
+            zonaCalienteId: envio.zonaCalienteId,
         }),
 
-        createdAt: envio.created_at,
-        updatedAt: envio.updated_at,
-
-        id: envio.codigo_envio,
+        createdAt: envio.createdAt,
+        updatedAt: envio.updatedAt,
     };
 }
 
-export function ResponseEnvios(envios: envio[]) {
-    const r = [];
-
-    for (const envio of envios) {
-        r.push(ResponseEnvio(envio));
-    }
-
-    return r;
+export function ResponseEnvios(envios: any[]) {
+    return envios.map(envio => ResponseEnvio(envio));
 }
 
-export function ResponseTicket(ticket: ticket) {
+export function ResponseTicket(ticket: any) {
     return {
-        codigoReclamo: ticket.codigo_reclamo,
-        codigoSeguimiento: ticket.codigo_seguimiento,
+        codigoReclamo: ticket.id,
+        codigoSeguimiento: ticket.envioId, // Reclamo follows EnvioId
         motivo: ticket.motivo,
         estado: ticket.estado,
-        creadoEn: ticket.created_at,
+        creadoEn: ticket.createdAt,
 
-        ...(ticket.dni_soporte_tecnico !== null && {
-            dniSoporteTecnico: ticket.dni_soporte_tecnico
+        ...(ticket.helperDni !== null && {
+            dniSoporteTecnico: ticket.helperDni
         }),
 
         ...(ticket.resolucion !== null && {
@@ -59,27 +49,15 @@ export function ResponseTicket(ticket: ticket) {
     };
 }
 
-export function ResponseTickets(tickets: ticket[]) {
-    const r = [];
-
-    for(const ticket of tickets) {
-        r.push(ResponseTicket(ticket));
-    }
-
-    return r;
+export function ResponseTickets(tickets: any[]) {
+    return tickets.map(ticket => ResponseTicket(ticket));
 }
 
-export function ResponseFacturas(transacciones: transaccion[]) {
-    const r = [];
-
-    for (const transaccion of transacciones) {
-        r.push({
-            id: transaccion.id_referencia_externa,
-            montoTotal: transaccion.monto_total,
-            emitidaEn: transaccion.created_at,
-            urlDescarga: "?"
-        });
-    }
-
-    return r;
+export function ResponseFacturas(transacciones: any[]) {
+    return transacciones.map(transaccion => ({
+        id: transaccion.idReferenciaExterna,
+        montoTotal: transaccion.montoTotal,
+        emitidaEn: transaccion.createdAt,
+        urlDescarga: "?"
+    }));
 }

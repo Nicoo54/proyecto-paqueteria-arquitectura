@@ -1,4 +1,4 @@
-﻿import { Envio, Ticket } from "./schemes"
+import { Envio, Ticket } from "./schemes"
 
 export const usuario = {
     dni: "34343",
@@ -172,7 +172,7 @@ export const ticketPendiente : Ticket = {
 export const ticketEnProceso: Ticket = {
     codigo_reclamo: 53454,
     codigo_seguimiento: 434341,
-    dni_soporte_tecnico: 395782,
+    dni_soporte_tecnico: "395782",
     motivo: "sdafwesg",
     resolucion: null,
     estado: "EN_PROCESO",
@@ -184,7 +184,7 @@ export const ticketEnProceso: Ticket = {
 export const ticketResuelto: Ticket = {
     codigo_reclamo: 53454,
     codigo_seguimiento: 434341,
-    dni_soporte_tecnico: 395782,
+    dni_soporte_tecnico: "395782",
     motivo: "sdafwesg",
     resolucion: "hrhtnhrdgfhd",
     estado: "RESUELTO",

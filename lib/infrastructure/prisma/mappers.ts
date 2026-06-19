@@ -4,13 +4,14 @@ import type { Transaccion } from "../../domain/liquidacion/types";
 import type { Transportista } from "../../domain/transportista/types";
 import type { Vehiculo } from "../../domain/vehiculo/types";
 
-type Decimalish = Prisma.Decimal | number | string | null;
+type Decimalish = any | number | string | null;
 
 function decimalANumber(v: Decimalish): number {
   if (v === null || v === undefined) return 0;
   if (typeof v === "number") return v;
   if (typeof v === "string") return Number(v);
-  return v.toNumber();
+  if (typeof v === "object" && v !== null && "toNumber" in v) return v.toNumber();
+  return Number(v);
 }
 
 function decimalANullable(v: Decimalish): number | null {
@@ -29,7 +30,7 @@ export type TransportistaPrisma = {
   dni: string;
   aliasBancario: string;
   cantidadResenas: number;
-  promedioCalificacion: Prisma.Decimal;
+  promedioCalificacion: any;
   estado: string;
   vehiculo?: VehiculoPrisma | null;
 };
@@ -41,14 +42,14 @@ export type EnvioPrisma = {
   transportistaDni: string | null;
   zonaCalienteId: number | null;
   origenDireccion: string;
-  origenLat: Prisma.Decimal;
-  origenLng: Prisma.Decimal;
+  origenLat: any;
+  origenLng: any;
   destinoDireccion: string;
-  destinoLat: Prisma.Decimal;
-  destinoLng: Prisma.Decimal;
+  destinoLat: any;
+  destinoLng: any;
   condicionClimatica: string;
   estado: string;
-  costo: Prisma.Decimal;
+  costo: any;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -56,11 +57,11 @@ export type EnvioPrisma = {
 export type TransaccionPrisma = {
   idReferenciaExterna: string;
   envioId: number;
-  montoTotal: Prisma.Decimal;
+  montoTotal: any;
   estadoPago: string;
   fechaLiquidacion: Date | null;
-  montoComisionPlataforma: Prisma.Decimal | null;
-  montoTransportista: Prisma.Decimal | null;
+  montoComisionPlataforma: any | null;
+  montoTransportista: any | null;
   idTransferenciaExterna: string | null;
 };
 

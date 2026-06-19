@@ -9,7 +9,7 @@ import {
   PrismaUsuarioRepository,
   PrismaVehiculoRepository,
 } from "./infrastructure/prisma";
-import { FakePasarelaDePagos } from "./infrastructure/pasarela";
+import { MercadoPagoPasarela } from "./infrastructure/pasarela";
 import { RelojSistema } from "./application/ports/reloj";
 import {
   AceptarEnvioUseCase,
@@ -32,7 +32,7 @@ export function crearDependenciasTransportista() {
   const authenticator = new ClerkAuthenticator();
   const lock = new PrismaDistributedLock(prisma);
   const reloj = new RelojSistema();
-  const pasarela = new FakePasarelaDePagos();
+  const pasarela = new MercadoPagoPasarela();
 
   return {
     repositorios: { transportistas, vehiculos, envios, transacciones, usuarios },

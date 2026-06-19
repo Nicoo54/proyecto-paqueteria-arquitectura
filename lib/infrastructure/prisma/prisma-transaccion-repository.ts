@@ -53,7 +53,7 @@ export class PrismaTransaccionRepository implements TransaccionRepository {
       },
     });
 
-    return items.flatMap((it): TransaccionLiquidable[] => {
+    return items.flatMap((it: any): TransaccionLiquidable[] => {
       const t = it.envio.transportista;
       if (!t) return [];
       return [

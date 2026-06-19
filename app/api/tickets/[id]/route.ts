@@ -20,7 +20,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
             return NextResponse.json({ error: "Identificador de envio debe ser un numero entero" }, { status: 400 });
         }
 
-        const ticket = await prisma.ticket.findUnique({ where: { codigo_reclamo: Number(id) } });
+        const ticket = await prisma.ticket.findUnique({ where: { id: Number(id) } });
 
         if (!ticket) {
             return NextResponse.json({ error: "No se encontro el ticket" }, { status: 404 });

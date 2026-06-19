@@ -42,7 +42,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             return NextResponse.json({ error: "Comentario demasiado largo" }, { status: 400 });
         }
 
-        const envio = await prisma.envio.findUnique({ where: { codigo_envio: Number(id) } });
+        const envio = await prisma.envio.findUnique({ where: { id: Number(id) } });
 
         if (!envio) {
             return NextResponse.json({ error: "No se encontro el envio" }, { status: 404 });
@@ -52,13 +52,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             return NextResponse.json({ error: "El envio no esta en estado ENTREGADO" }, { status: 400 });
         }
 
-        const resenaExistente = await prisma.resena.findFirst({ where: { codigo_seguimiento: Number(id), }, });
+        const resenaExistente = await prisma.resena.findFirst({ where: { envioId: Number(id), }, });
 
         if (resenaExistente) {
             return NextResponse.json({ error: "El envio ya posee una resena registrada" }, { status: 409 });
         }
 
-        const resena = await prisma.resena.create({ data: { codigo_seguimiento: Number(id), puntaje: puntaje, comentario: comentario }, });
+        const resena = await prisma.resena.create({ data: { envioId: Number(id), puntaje: puntaje, comentario: comentario }, });
 
         return NextResponse.json({ status: 201 });
 

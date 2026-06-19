@@ -1,1 +1,1 @@
-export * from "./fake-pasarela-pagos";
+export * from "./mercadopago-pasarela";

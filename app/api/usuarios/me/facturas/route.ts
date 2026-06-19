@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { transaccion1, transaccion2, transaccion3 } from "../../../../../lib/mocks";
+
 import { prisma } from "../../../../../lib/prisma";
 import { ResponseFacturas } from "../../../../../lib/responses";
 import { auth } from '@clerk/nextjs/server';
@@ -26,26 +26,26 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: "Limite de cantidad invalido" }, { status: 400 });
         }
 
-        const usuario = await prisma.usuario.findUnique({ where: { clerk_id: userId } });
+        const usuario = await prisma.usuario.findUnique({ where: { clerkId: userId } });
 
-        const envios = await prisma.envio.findMany({ where: { dni_remitente: usuario?.dni } });
-        const codigosEnvio = envios.map(envio => envio.codigo_envio);
+        const envios = await prisma.envio.findMany({ where: { remitenteDni: usuario?.dni } });
+        const codigosEnvio = envios.map((envio: { id: number }) => envio.id);
 
         const skip = (page - 1) * limit;
         const transacciones = await prisma.transaccion.findMany({
             where: {
-                codigo_seguimiento: { in: codigosEnvio }
+                envioId: { in: codigosEnvio }
             },
 
             orderBy: {
-                created_at: "desc"
+                createdAt: "desc"
             },
 
             skip,
             take: limit
         });
 
-        const total = await prisma.transaccion.count({ where: { codigo_seguimiento: { in: codigosEnvio } } });
+        const total = await prisma.transaccion.count({ where: { envioId: { in: codigosEnvio } } });
 
         const facturas = ResponseFacturas(transacciones);
 

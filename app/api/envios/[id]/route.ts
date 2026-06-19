@@ -26,7 +26,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
             return NextResponse.json({ error: "Identificador invalido" }, { status: 400 });
         }
 
-        const envio = await prisma.envio.findUnique({ where: { codigo_envio: Number(id) } });
+        const envio = await prisma.envio.findUnique({ where: { id: Number(id) } });
 
         if (!envio) {
             return NextResponse.json({ error: "No se encontro el envio" }, { status: 404 });

@@ -15,45 +15,38 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json();
-        const { asunto, descripcion } = body;
+        const { envioId, motivo } = body;
 
-        if (!asunto) {
-            return NextResponse.json({ error: "No se especifica asunto" }, { status: 400 });
+        if (!envioId) {
+            return NextResponse.json({ error: "No se especifica envioId" }, { status: 400 });
         }
 
-        if (!descripcion) {
-            return NextResponse.json({ error: "No se especifica descripcion" }, { status: 400 });
+        if (!motivo) {
+            return NextResponse.json({ error: "No se especifica motivo" }, { status: 400 });
         }
 
-        if (typeof asunto !== "string") {
-            return NextResponse.json({ error: "Asunto invalido" }, { status: 400 });
+        if (typeof motivo !== "string") {
+            return NextResponse.json({ error: "Motivo invalido" }, { status: 400 });
         }
 
-        if (typeof descripcion !== "string") {
-            return NextResponse.json({ error: "Descripcion invalida" }, { status: 400 });
+        if (motivo.length > 500) {
+            return NextResponse.json({ error: "Motivo demasiado largo" }, { status: 400 });
         }
 
-        if (asunto.length > 255) {
-            return NextResponse.json({ error: "Asunto demasiado largo" });
+        if (motivo.trim().length === 0) {
+            return NextResponse.json({ error: "Motivo invalido" }, { status: 400 });
         }
 
-        if (descripcion.length > 255) {
-            return NextResponse.json({ error: "Descripcion demasiada larga" }, { status: 400 });
-        }
-
-        if (asunto.trim().length === 0) {
-            return NextResponse.json({ error: "Asunto invalido" }, { status: 400 });
-        }
-
-        if (descripcion.trim().length === 0) {
-            return NextResponse.json({ error: "Descripcion invalida" }, { status: 400 });
+        const envioIntId = Number(envioId);
+        if (!Number.isInteger(envioIntId)) {
+            return NextResponse.json({ error: "envioId invalido" }, { status: 400 });
         }
 
         const ticket = await prisma.ticket.create({
             data: {
-                motivo: asunto,
-                estado: "PENDIENTE",
-                codigo_seguimiento: 999,
+                motivo: motivo.trim(),
+                estado: "ABIERTO",
+                envioId: envioIntId,
             },
         });
 

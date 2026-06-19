@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
         // TODO: comparar precioCalculado con lo cacheado en redis
         //       y devolver el error de cotizacion expirada.
 
-        const remitente = await prisma.usuario.findUnique({ where: { clerk_id: userId } });
+        const remitente = await prisma.usuario.findUnique({ where: { clerkId: userId } });
 
         if (remitente === null) {
             return NextResponse.json({ error: "No se encontro el usuario" }, { status: 404 });
@@ -146,22 +146,23 @@ export async function POST(req: NextRequest) {
 
         const envio = await prisma.envio.create({
             data: {
-                categoria_paquete: categoriaPaquete,
-                dni_remitente: remitenteDNI,
-                origen_direccion: origenDireccion,
-                origen_lat: origenLat,
-                origen_lng: origenLng,
-                destino_direccion: destinoDireccion,
-                destino_lat: destinoLat,
-                destino_lng: destinoLng,
-                condicion_climatica: condicion,
+                categoriaPaquete: categoriaPaquete,
+                remitenteDni: remitenteDNI,
+                origenDireccion: origenDireccion,
+                origenLat: origenLat,
+                origenLng: origenLng,
+                destinoDireccion: destinoDireccion,
+                destinoLat: destinoLat,
+                destinoLng: destinoLng,
+                condicionClimatica: condicion,
                 estado: "BUSCANDO",
                 costo: precioCalculado,
+                tipoPago: tipoPago,
             }
         });
 
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_APP_URL}/api/envios/${envio.codigo_envio}/pagos`,
+            `${process.env.NEXT_PUBLIC_APP_URL}/api/envios/${envio.id}/pagos`,
             {
                 method: "POST",
                 headers: {
@@ -180,7 +181,12 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: data.error }, { status: data.status });
         }
 
-        return NextResponse.json(ResponseEnvio(envio), { status: 201 });
+        const paymentLink = data.paymentLink;
+
+        return NextResponse.json({
+            ...ResponseEnvio(envio),
+            paymentLink
+        }, { status: 201 });
     } catch (error) {
         console.error("POST /envios", error);
 

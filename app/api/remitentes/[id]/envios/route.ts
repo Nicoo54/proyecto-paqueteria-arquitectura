@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { envioAceptado, envioBuscando, envioEnCamino, remitenteMock } from "../../../../../lib/mocks";
 import { ResponseEnvios } from "../../../../../lib/responses";
 import { prisma } from "../../../../../lib/prisma";
-import { remitente } from '@prisma/client'
 import { auth } from '@clerk/nextjs/server';
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -46,18 +44,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         const skip = (page - 1) * limit;
         const envios = await prisma.envio.findMany({
             where: {
-                dni_remitente: id
+                remitenteDni: id
             },
 
             orderBy: {
-                created_at: "desc"
+                createdAt: "desc"
             },
 
             skip,
             take: limit
         });
 
-        const total = await prisma.envio.count({ where: { dni_remitente: id } });
+        const total = await prisma.envio.count({ where: { remitenteDni: id } });
 
         return NextResponse.json({
             data: ResponseEnvios(envios),
