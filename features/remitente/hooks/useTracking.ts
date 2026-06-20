@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { EnvioTracking, UbicacionCoordenadas } from "../types/tracking";
 import { trackingService } from "../services/trackingService";
+
+const POLLING_INTERVAL_MS = 10000;
 
 export function useTracking(id: string) {
   const [envio, setEnvio] = useState<EnvioTracking | null>(null);
@@ -10,8 +12,16 @@ export function useTracking(id: string) {
     "Conectando..." | "En vivo" | "Estatico"
   >("Conectando...");
   const [isLoading, setIsLoading] = useState(true);
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 1. Carga inicial de datos
+  const detenerPolling = () => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  };
+
+  // 1. Carga inicial
   useEffect(() => {
     if (!id) return;
     let isMounted = true;
@@ -28,33 +38,36 @@ export function useTracking(id: string) {
     };
   }, [id]);
 
-  // 2. Simulación de conexión a WebSocket
+  // 2. Polling — arranca cuando hay envio y está EN_CAMINO, se detiene si no
   useEffect(() => {
     if (!envio) return;
 
     if (envio.estado !== "EN_CAMINO") {
       setWsStatus("Estatico");
+      detenerPolling();
       return;
     }
 
     setWsStatus("En vivo");
 
-    // Intervalo que simula las coordenadas recibidas cada 3 segundos
-    const wsMockInterval = setInterval(() => {
-      setUbicacionMoto((prev) => {
-        if (!prev) return prev;
+    pollingRef.current = setInterval(async () => {
+      try {
+        const data = await trackingService.obtenerEnvioTracking(id);
+        setEnvio(data);
+        setUbicacionMoto({ lat: data.origen_lat, lng: data.origen_lng });
 
-        // Mueve la moto un 5% más cerca del destino en cada tick
-        const step = 0.05;
-        const newLat = prev.lat + (envio.destino_lat - prev.lat) * step;
-        const newLng = prev.lng + (envio.destino_lng - prev.lng) * step;
+        // Si el envío pasó a ENTREGADO, se detiene el polling
+        if (data.estado !== "EN_CAMINO") {
+          setWsStatus("Estatico");
+          detenerPolling();
+        }
+      } catch (error) {
+        console.error("Error en polling de tracking:", error);
+      }
+    }, POLLING_INTERVAL_MS);
 
-        return { lat: newLat, lng: newLng };
-      });
-    }, 3000);
-
-    return () => clearInterval(wsMockInterval);
-  }, [envio]);
+    return () => detenerPolling();
+  }, [envio?.estado, id]);
 
   return { envio, ubicacionMoto, wsStatus, isLoading };
 }
