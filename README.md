@@ -271,7 +271,7 @@ Hay 3 usuarios de prueba creados en Clerk:
 |---|---|---|
 | `usuario+clerk_test@a.com` | `1234` | (sin rol → tratado como remitente) |
 | `transportista+clerk_test@a.com` | `1234` | `"role": "transportista"` |
-| `admin+clerk_test@a.com` | `1234` | `"role": "admin"` (= helper) |
+| `admin+clerk_test@a.com` | `1234` | `"role": "admin"` (= Soporte) |
 
 Código de verificación: `424242`.
 
