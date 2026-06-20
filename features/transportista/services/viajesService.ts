@@ -45,24 +45,41 @@ export const viajesService = {
     };
   },
 
-  // TODO: Remplazar
-  async obtenerDetalleViaje(id: string): Promise<ViajeDetalle> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          codigo_envio: id,
-          fecha: "15 de Junio de 2026 a las 14:55",
-          origen_direccion: "Mitre 150, Bahía Blanca, Buenos Aires",
-          destino_direccion: "Av. Alem 1253, Bahía Blanca, Buenos Aires",
-          categoria_paquete: "Mediano (M)",
-          monto_base: 1650.0,
-          bonificaciones_aplicadas: {
-            zona_caliente: 350.0,
-            clima_extremo: 150.5,
-          },
-          monto_total_percibido: 2150.5,
-        });
-      }, 500);
-    });
+  async obtenerDetalleViaje(
+    id: string,
+    apiFetch: ApiFetch,
+  ): Promise<ViajeDetalle> {
+    const response: PaginatedResponse<EnvioDto> = await apiFetch(
+      API_ENDPOINTS.TRANSPORTISTA.HISTORIAL,
+    );
+
+    // No parece correcto hacer otra llamada al mismo endpoint para obtener el detalle
+    // de un viaje específico, pero dado que no hay un endpoint dedicado para esto,
+    // filtramos la respuesta para encontrar el viaje deseado.
+    // Esto es ineficiente y debería ser revisado con el equipo de backend para exponer
+    // un endpoint específico que devuelva el detalle de un viaje por su ID.
+    // y el historial debería devolver solo los datos necesarios para la lista, no toda la info del viaje.
+    const envios = response.envios || [];
+    const envio = envios.find((e) => e.id.toString() === id);
+
+    if (!envio) {
+      throw new Error("Viaje no encontrado");
+    }
+
+    const envioMapeado: ViajeDetalle = {
+      codigo_envio: envio.id.toString(),
+      fecha: formatearFecha(envio.createdAt?.toString() || "Fecha desconocida"),
+      origen_direccion: envio.origenDireccion,
+      destino_direccion: envio.destinoDireccion,
+      categoria_paquete: envio.categoriaPaquete,
+      monto_base: envio.costo,
+      bonificaciones_aplicadas: {
+        zona_caliente: envio.zonaCalienteId ? envio.costo * 0.2 : 0,
+        clima_extremo: envio.condicionClimatica ? envio.costo * 0.1 : 0, // Esto es solo un ejemplo, la lógica real de bonificaciones debería ser definida por el backend y no calculada en el frontend para evitar inconsistencias.
+      },
+      monto_total_percibido: envio.costo * 0.7, // Este valor debería ser calculado o proporcionado por el backend, pero lo dejamos en 0 por ahora.
+    };
+
+    return envioMapeado;
   },
 };
