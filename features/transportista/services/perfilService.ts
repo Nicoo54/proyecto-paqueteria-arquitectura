@@ -1,25 +1,33 @@
-import { PerfilTransportista } from "@/features/transportista/services/perfil";
+import {
+  API_ENDPOINTS,
+  type TransportistaDto,
+  type VehiculoRequest,
+} from "@/lib/api-contract";
+import { ApiFetch } from "@/shared/api-client";
 
-// TODO: Reemplazar con llamadas reales a la API
 export const perfilService = {
-  async obtenerPerfil(): Promise<PerfilTransportista> {
+  async obtenerPerfil(apiFetch: ApiFetch): Promise<TransportistaDto> {
+    return apiFetch(API_ENDPOINTS.TRANSPORTISTA.PERFIL);
+  },
+
+  // TODO: Proxima etapa
+  async actualizarAlias(
+    datos: { aliasBancario: string },
+    apiFetch: ApiFetch,
+  ): Promise<void> {
     return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          categoria: "MOTO",
-          patente: "A123BCD",
-          alias_bancario: "packeteer.moto.carlos",
-          cantidad_resenas: 24,
-          promedio_calificacion: 4.85,
-        });
-      }, 600);
+      setTimeout(() => resolve(), 1200);
     });
   },
 
-  // TODO: Reemplazar con llamadas reales a la API
-  async actualizarPerfil(datos: Partial<PerfilTransportista>): Promise<void> {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(), 1200);
+  async actualizarVehiculo(
+    datos: VehiculoRequest,
+    apiFetch: ApiFetch,
+  ): Promise<void> {
+    return apiFetch(API_ENDPOINTS.TRANSPORTISTA.VEHICULO, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datos),
     });
   },
 };

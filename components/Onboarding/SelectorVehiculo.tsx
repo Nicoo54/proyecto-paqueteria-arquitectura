@@ -1,24 +1,12 @@
 "use client";
 
-import { use } from "react";
 import { Label } from "@/components/ui/label";
-import {
-  CATEGORIAS_VEHICULOS,
-  CategoriaVehiculo,
-} from "@/features/landing/context/onboardingContent";
-
-// TODO: Cambiar a fetch a API real
-const fetchCategoriasVehiculosPromise = new Promise<
-  readonly CategoriaVehiculo[]
->((resolve) => {
-  setTimeout(() => {
-    resolve(CATEGORIAS_VEHICULOS);
-  }, 1500);
-});
+import { CONFIG_VEHICULOS } from "@/features/landing/context/onboardingContent";
+import { CategoriaVehiculo } from "@/lib/api-contract";
 
 interface Props {
   categoriaSeleccionada: string;
-  onChange: (id: string) => void;
+  onChange: (categoria: CategoriaVehiculo) => void;
   limpiarError: () => void;
 }
 
@@ -27,8 +15,6 @@ export default function SelectorVehiculo({
   onChange,
   limpiarError,
 }: Props) {
-  const categoriasApi = use(fetchCategoriasVehiculosPromise);
-
   return (
     <div className="space-y-3 pt-2">
       <Label className="text-sm font-semibold text-slate-900">
@@ -36,7 +22,7 @@ export default function SelectorVehiculo({
       </Label>
 
       <div className="grid grid-cols-3 gap-3">
-        {categoriasApi.map((veh) => (
+        {CONFIG_VEHICULOS.map((veh) => (
           <button
             key={veh.id}
             type="button"
