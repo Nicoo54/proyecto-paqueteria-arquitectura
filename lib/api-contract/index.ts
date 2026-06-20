@@ -38,23 +38,16 @@ export type {
 
 export type { ErrorBody } from "../http/errors";
 
-export type {
-  EstadoEnvio,
-  CondicionClimatica,
-} from "../domain/envio/types";
+export type { EstadoEnvio, CondicionClimatica } from "../domain/envio/types";
 
-export type {
-  EstadoTransportista,
-} from "../domain/transportista/types";
+export type { EstadoTransportista } from "../domain/transportista/types";
 
 export type {
   CategoriaVehiculo,
   CategoriaPaquete,
 } from "../domain/vehiculo/types";
 
-export type {
-  EstadoPago,
-} from "../domain/liquidacion/types";
+export type { EstadoPago } from "../domain/liquidacion/types";
 
 // Endpoints disponibles, como referencia para la UI.
 export const API_ENDPOINTS = {
@@ -64,6 +57,7 @@ export const API_ENDPOINTS = {
     UBICACION: "/api/transportistas/me/ubicacion",
     HISTORIAL: "/api/transportistas/me/envios",
     VEHICULO: "/api/transportistas/me/vehiculos",
+    VIAJE_ACTIVO: "/api/transportistas/me/envios/viaje-activo",
   },
   ENVIOS: {
     EXPLORAR: "/api/envios",

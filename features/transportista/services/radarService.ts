@@ -3,11 +3,10 @@ import { PaqueteDisponible } from "../types/types";
 import { API_ENDPOINTS, CategoriaVehiculo, EnvioDto } from "@/lib/api-contract";
 
 export const radarService = {
-  // TODO: Cambiar por GET /api/transportistas/me/viaje-activo
   async obtenerViajeActivo(apiFetch: ApiFetch): Promise<{ id: string } | null> {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(null), 600);
-    });
+    const response = await apiFetch(API_ENDPOINTS.TRANSPORTISTA.VIAJE_ACTIVO);
+    if (!response) return null;
+    return { id: response };
   },
 
   async obtenerPaquetesDisponibles(

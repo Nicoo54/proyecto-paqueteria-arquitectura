@@ -23,31 +23,47 @@ export function useRadarTransportista() {
   const [isAccepting, setIsAccepting] = useState(false);
 
   useEffect(() => {
+    // Si se desconecta o apaga el GPS, limpiamos todo
     if (!isOnline || !ubicacion) {
       setPaquetes([]);
+      setViajeActivo(null);
       return;
     }
 
     let isMounted = true;
     setIsLoading(true);
 
-    const buscarPaquetes = async () => {
+    const inicializarRadar = async () => {
       try {
+        // 1. PRIMERO: Buscamos si hay un viaje activo en curso
+        const viaje = await radarService.obtenerViajeActivo(apiFetch);
+        if (!isMounted) return;
+
+        if (viaje) {
+          setViajeActivo(viaje);
+          setIsLoading(false);
+          return;
+        }
+
+        // 2. SEGUNDO: Si NO hay viaje activo, buscamos paquetes en el radar
+        setViajeActivo(null);
+
         const disponibles = await radarService.obtenerPaquetesDisponibles(
           ubicacion.lat,
           ubicacion.lng,
           radioKm,
           apiFetch,
         );
+
         if (isMounted) setPaquetes(disponibles);
       } catch (error) {
-        console.error("Error explorando envíos:", error);
+        console.error("Error en el radar:", error);
       } finally {
         if (isMounted) setIsLoading(false);
       }
     };
 
-    buscarPaquetes();
+    inicializarRadar();
 
     return () => {
       isMounted = false;
