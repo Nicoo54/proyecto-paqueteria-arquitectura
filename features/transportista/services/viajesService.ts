@@ -2,46 +2,47 @@ import {
   ViajeDetalle,
   ViajeHistorial,
 } from "@/features/transportista/viaje/types";
+import { API_ENDPOINTS, EnvioDto, PaginatedResponse } from "@/lib/api-contract";
+import { ApiFetch } from "@/shared/api-client";
+import { formatearFecha } from "@/shared/dateUtils";
 
-// TODO: Remplazar
 export const viajesService = {
-  async obtenerHistorialViajes(): Promise<{
+  async obtenerHistorialViajes(apiFetch: ApiFetch): Promise<{
     viajes: ViajeHistorial[];
     totalGanado: number;
   }> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const viajes = [
-          {
-            codigo_envio: "1004",
-            fecha: "15 Jun, 2026",
-            origen_direccion: "Mitre 150",
-            destino_direccion: "Alem 1253",
-            monto_ganado: 2150.5,
-            zona_caliente_aplicada: true,
-          },
-          {
-            codigo_envio: "1002",
-            fecha: "10 Jun, 2026",
-            origen_direccion: "Sarmiento 210",
-            destino_direccion: "Vieytes 840",
-            monto_ganado: 1200.0,
-            zona_caliente_aplicada: false,
-          },
-          {
-            codigo_envio: "0985",
-            fecha: "04 Jun, 2026",
-            origen_direccion: "Estomba 88",
-            destino_direccion: "Av. Colon 432",
-            monto_ganado: 2600.0,
-            zona_caliente_aplicada: true,
-          },
-        ];
-        const totalGanado = viajes.reduce((acc, v) => acc + v.monto_ganado, 0);
+    const response: PaginatedResponse<EnvioDto> = await apiFetch(
+      API_ENDPOINTS.TRANSPORTISTA.HISTORIAL,
+    );
 
-        resolve({ viajes, totalGanado });
-      }, 800);
-    });
+    // TODO (Próxima Etapa): Manejar response.meta para hacer scroll infinito o botones de paginación.
+    // Por ahora, solo extraemos la primera página de datos.
+    // aqui devuelve items y envios, mire la logica y no entendi la diferencia entre ambos,
+    // revisar con el equipo de backend para unificar la respuesta y evitar confusiones.
+    const envios = response.envios || [];
+
+    const viajesMapeados: ViajeHistorial[] = envios.map((envio) => ({
+      codigo_envio: envio.id.toString(),
+      origen_direccion: envio.origenDireccion,
+      destino_direccion: envio.destinoDireccion,
+      // Si existe el envio siempre va a tener createdAt, en backend puede estar undefined
+      // (parece mal diseño, revisar) por eso el fallback.
+      fecha: formatearFecha(envio.createdAt?.toString() || "Fecha desconocida"),
+      monto_ganado: envio.costo,
+      zona_caliente_aplicada: envio.zonaCalienteId ? true : false,
+    }));
+
+    // Esto deberia obtenerse directamente del backend para evitar inconsistencias,
+    // pero lo calculamos aquí para tener una idea de la ganancia total porq no hay endpoint expuesto.
+    const totalGanado = viajesMapeados.reduce(
+      (acc, viaje) => acc + viaje.monto_ganado,
+      0,
+    );
+
+    return {
+      viajes: viajesMapeados,
+      totalGanado,
+    };
   },
 
   // TODO: Remplazar
