@@ -1,33 +1,31 @@
 import { EnvioDetalle } from "../types/detalleEnvio";
 
-// TODO: Reemplazar por llamada real a la API
 export const detalleEnvioService = {
   async obtenerDetalle(id: string): Promise<EnvioDetalle> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          codigo_envio: id,
-          categoria_paquete: "Mediano (M)",
-          origen_direccion: "Mitre 150, Bahía Blanca, Buenos Aires",
-          destino_direccion: "Av. Alem 1253, Bahía Blanca, Buenos Aires",
-          condicion_climatica: "Despejado, 18°C",
-          estado: "ENTREGADO",
-          costo: 1850.5,
-          created_at: "12 de Junio de 2026 a las 14:32",
-          transportista: {
-            nombre: "Carlos M.",
-            vehiculo: "Honda Titan (AB123CD)",
-            rating: 4.8,
-          },
-          /*
-          resena: {
-            puntaje: 4,
-            comentario:
-              "Llegó rápido y en buen estado, pero el transportista fue un poco difícil de contactar.",
-          },
-          */
-        });
-      }, 400);
-    });
+    const response = await fetch(`/api/envios/${id}`);
+    
+    if (!response.ok) {
+      throw new Error(`Error fetching detalle: ${response.statusText}`);
+    }
+
+    const envio = await response.json();
+    return {
+      codigo_envio: envio.id.toString(),
+      categoria_paquete: envio.categoriaPaquete,
+      origen_direccion: envio.origenDireccion,
+      destino_direccion: envio.destinoDireccion,
+      condicion_climatica: envio.condicionClimatica,
+      estado: envio.estado,
+      costo: envio.costo,
+      created_at: new Intl.DateTimeFormat('es-AR', {
+        dateStyle: 'long',
+        timeStyle: 'short'
+      }).format(new Date(envio.createdAt)),
+      transportista: envio.transportistaDni ? {
+        nombre: envio.transportistaDni, // Idealmente esto vendria con un join, pero sirve por ahora
+        vehiculo: "Vehículo registrado",
+        rating: 5.0,
+      } : undefined,
+    };
   },
 };

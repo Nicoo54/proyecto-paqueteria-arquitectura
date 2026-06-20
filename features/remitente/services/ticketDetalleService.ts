@@ -1,28 +1,34 @@
 import { TicketDetalle } from "../types/ticketDetalle";
 
-// TODO: Reemplazar por llamada real a la API
 export const ticketDetalleService = {
-  async obtenerDetalleTicket(id: string): Promise<TicketDetalle> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          id: id,
-          envio_id: "1004",
-          asunto: "Paquete dañado",
-          descripcion:
-            "Hola, el conductor me entregó el paquete pero la caja estaba abollada en una de las esquinas. Necesito saber cómo proceder con el seguro de carga.",
-          estado: "ABIERTO",
-          fecha_creacion: "15 de Junio de 2026 a las 09:15",
-          soporte: {
-            nombre: "María L.",
-            comentario:
-              "Hola, lamentamos el inconveniente. Por favor, subí 3 fotos de la caja y del producto en su interior a este mismo hilo para activar la póliza con nuestra aseguradora.",
-            conclusion:
-              "Se aprobaron las fotos y se emitió el reembolso total a tu cuenta de MercadoPago. El caso queda cerrado.",
-            fecha_respuesta: "15 de Junio de 2026 a las 11:30",
-          },
-        });
-      }, 500);
-    });
+  async obtenerDetalle(id: string): Promise<TicketDetalle> {
+    const numericId = id.replace('TK-', '');
+    const response = await fetch(`/api/tickets/${numericId}`);
+    
+    if (!response.ok) {
+      throw new Error(`Error fetching ticket detalle: ${response.statusText}`);
+    }
+
+    const ticket = await response.json();
+    return {
+      id: `TK-${ticket.codigoReclamo}`,
+      envio_id: ticket.codigoSeguimiento.toString(),
+      asunto: ticket.motivo,
+      descripcion: ticket.motivo, // Usamos motivo para descripcion tambien
+      estado: ticket.estado,
+      fecha_creacion: new Intl.DateTimeFormat('es-AR', {
+        dateStyle: 'long',
+        timeStyle: 'short'
+      }).format(new Date(ticket.creadoEn)),
+      soporte: ticket.dniSoporteTecnico ? {
+        nombre: ticket.dniSoporteTecnico,
+        comentario: ticket.resolucion || "El agente está revisando tu caso.",
+        conclusion: ticket.estado === 'RESUELTO' ? ticket.resolucion : undefined,
+        fecha_respuesta: new Intl.DateTimeFormat('es-AR', {
+          dateStyle: 'long',
+          timeStyle: 'short'
+        }).format(new Date(ticket.creadoEn)), // Usamos creadoEn por ahora
+      } : undefined,
+    };
   },
 };

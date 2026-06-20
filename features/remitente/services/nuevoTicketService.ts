@@ -3,13 +3,25 @@ import {
   NuevoTicketResponse,
 } from "../types/ticketDetalle";
 
-// TODO: Cambiar esta función para que haga una llamada real a la API
 export const nuevoTicketService = {
   async crearTicket(payload: NuevoTicketPayload): Promise<NuevoTicketResponse> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ id: "TK-4100" });
-      }, 1000);
+    const response = await fetch("/api/tickets", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        envioId: payload.codigo_seguimiento,
+        motivo: payload.motivo,
+      }),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Error creando ticket: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return { id: `TK-${data.codigoReclamo}` };
   },
 };

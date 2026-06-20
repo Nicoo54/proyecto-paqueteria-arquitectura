@@ -1,26 +1,28 @@
 import { EnvioTracking } from "../types/tracking";
 
-// TODO: Reemplazar esta función mock por una llamada real a la API
 export const trackingService = {
   async obtenerEnvioTracking(id: string): Promise<EnvioTracking> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          codigo_envio: id,
-          estado: "BUSCANDO", // cambiar esto a "ENTREGADO" o "BUSCANDO..." para probar la UI
-          origen_direccion: "Mitre 150, Bahía Blanca",
-          origen_lat: -38.7183,
-          origen_lng: -62.2663,
-          destino_direccion: "Alem 1253, Bahía Blanca",
-          destino_lat: -38.6983,
-          destino_lng: -62.2463,
-          chofer: {
-            nombre: "Carlos M.",
-            vehiculo: "Honda Titan 150cc",
-            rating: 4.8,
-          },
-        });
-      }, 800);
-    });
+    const response = await fetch(`/api/envios/${id}`);
+    
+    if (!response.ok) {
+      throw new Error(`Error fetching tracking: ${response.statusText}`);
+    }
+
+    const envio = await response.json();
+    return {
+      codigo_envio: envio.id.toString(),
+      estado: envio.estado,
+      origen_direccion: envio.origenDireccion,
+      origen_lat: envio.origenLat,
+      origen_lng: envio.origenLng,
+      destino_direccion: envio.destinoDireccion,
+      destino_lat: envio.destinoLat,
+      destino_lng: envio.destinoLng,
+      chofer: envio.transportistaDni ? {
+        nombre: envio.transportistaDni,
+        vehiculo: "Vehículo",
+        rating: 5.0,
+      } : undefined,
+    };
   },
 };

@@ -14,7 +14,7 @@ export function useDetalleTicket(id: string) {
     setIsLoading(true);
 
     ticketDetalleService
-      .obtenerDetalleTicket(id)
+      .obtenerDetalle(id)
       .then((data) => {
         if (!isMounted) return;
         setTicket(data);
