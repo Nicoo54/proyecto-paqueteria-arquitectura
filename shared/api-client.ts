@@ -22,7 +22,7 @@ export function useApiClient() {
       });
 
       if (!res.ok) {
-        throw new Error(`Error HTTP: ${res.status}`);
+        throw new Error(`Error HTTP: ${res.status} ${res.statusText}`);
       }
 
       if (res.status === 204) return null;

@@ -6,7 +6,6 @@ import { VistaCargando } from "@/components/Transportista/home/VistaCargando";
 import { VistaViajeActivo } from "@/components/Transportista/home/VistaViajeActivo";
 import { ListaPaquetes } from "@/components/Transportista/home/ListaPaquetes";
 import ModalDetallePaquete from "@/components/Transportista/home/ModalDetallePaquete";
-import { Radar } from "lucide-react"; // Un iconito lindo para el slider
 import { SliderRadioBusqueda } from "@/components/Transportista/home/SliderRadioBusqueda";
 
 export default function RadarTransportistaPage() {
@@ -20,7 +19,7 @@ export default function RadarTransportistaPage() {
     isAccepting,
     handleAceptarViaje,
     radioKm,
-    setRadioKm, // Traemos el estado del radio
+    setRadioKm,
   } = useRadarTransportista();
 
   if (!isOnline) return <VistaOffline />;

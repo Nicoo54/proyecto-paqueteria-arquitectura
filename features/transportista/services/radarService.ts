@@ -45,10 +45,13 @@ export const radarService = {
     }));
   },
 
-  // TODO: Cambiar por PATCH /api/envios/:id/aceptar
+  // No se para que sirve el body con el estado "ACEPTADO" si el endpoint de aceptar
+  // viaje no lo requiere, despues revisar si es necesario modificar el contrato del backend
+  // para que acepte ese body o si se puede eliminar
   async aceptarViaje(id: string, apiFetch: ApiFetch): Promise<void> {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(), 1200);
+    return await apiFetch(`${API_ENDPOINTS.ENVIOS.DETALLE(id)}`, {
+      method: "PATCH",
+      body: JSON.stringify({ estado: "ACEPTADO" }),
     });
   },
 };
