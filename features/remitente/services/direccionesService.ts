@@ -1,36 +1,20 @@
 import { Ubicacion } from "@/shared/types/ubicacion";
 import { DireccionGuardada, NuevaDireccionPayload } from "../types/direccione";
+import { ApiFetch } from "@/shared/api-client";
 
-// TODO: Cambiar a API real cuando esté lista
 export const direccionesService = {
-  async obtenerDirecciones(): Promise<DireccionGuardada[]> {
-    return new Promise((resolve) =>
-      setTimeout(
-        () =>
-          resolve([
-            {
-              id_direccion: 1,
-              direccion: "Mitre 150",
-              ciudad: "Bahía Blanca",
-              origen_lat: -38.7183,
-              origen_lng: -62.2663,
-            },
-            {
-              id_direccion: 2,
-              direccion: "Sarmiento 210",
-              ciudad: "Bahía Blanca",
-              origen_lat: -38.72,
-              origen_lng: -62.27,
-            },
-          ]),
-        600,
-      ),
-    );
+  async obtenerDirecciones(apiFetch: ApiFetch): Promise<DireccionGuardada[]> {
+    const res = await apiFetch("/api/usuarios/me/direcciones");
+    return res.data;
   },
 
-  async guardarDireccion(payload: NuevaDireccionPayload): Promise<void> {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(), 800);
+  async guardarDireccion(
+    payload: NuevaDireccionPayload,
+    apiFetch: ApiFetch,
+  ): Promise<void> {
+    await apiFetch("/api/usuarios/me/direcciones", {
+      method: "POST",
+      body: JSON.stringify(payload),
     });
   },
 };

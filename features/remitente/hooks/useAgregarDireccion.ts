@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { direccionesService } from "@/features/remitente/services/direccionesService";
 import { NuevaDireccionPayload } from "../types/direccione";
+import { useApiClient } from "@/shared/api-client";
 
 export function useAgregarDireccion() {
   const router = useRouter();
-
+  const { apiFetch } = useApiClient();
   const [searchText, setSearchText] = useState("");
   const [direccionLista, setDireccionLista] =
     useState<NuevaDireccionPayload | null>(null);
@@ -52,7 +53,7 @@ export function useAgregarDireccion() {
     setIsSaving(true);
     setError(null);
     try {
-      await direccionesService.guardarDireccion(direccionLista);
+      await direccionesService.guardarDireccion(direccionLista, apiFetch);
       router.push("/cliente/cotizar");
     } catch (err) {
       setError("Ocurrió un error al guardar la dirección.");
