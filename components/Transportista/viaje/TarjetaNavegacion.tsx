@@ -25,6 +25,8 @@ export function TarjetaNavegacion({
   onConfirmar,
 }: Props) {
   const esRetiro = fase === "HACIA_RETIRO";
+  const esArranque = fase === "LISTO_PARA_ARRANCAR";
+  const esEntrega = fase === "HACIA_ENTREGA";
 
   const mensajeBloqueo = !tieneGps
     ? "Activá tu ubicación para continuar"
@@ -38,7 +40,11 @@ export function TarjetaNavegacion({
         <CardContent className="p-0">
           <div className="bg-slate-900 text-white p-5">
             <p className="text-amber-400 font-bold text-xs uppercase tracking-wider mb-1">
-              {esRetiro ? "Yendo a retirar" : "Yendo a entregar"}
+              {esRetiro
+                ? "Yendo a retirar"
+                : esArranque
+                  ? "Paquete a bordo"
+                  : "Yendo a entregar"}
             </p>
             <div className="flex items-start gap-2">
               <MapPin className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
@@ -66,11 +72,13 @@ export function TarjetaNavegacion({
           <div className="p-4 bg-white">
             <Button
               onClick={onConfirmar}
-              disabled={isUpdating || !puedeConfirmar}
+              disabled={isUpdating || (!puedeConfirmar && !esArranque)}
               className={`w-full h-14 text-lg font-bold rounded-xl ${
                 esRetiro
                   ? "bg-amber-400 text-slate-900 hover:bg-amber-500"
-                  : "bg-emerald-500 text-white hover:bg-emerald-600"
+                  : esArranque
+                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                    : "bg-emerald-500 text-white hover:bg-emerald-600"
               }`}
             >
               {isUpdating ? (
@@ -80,12 +88,14 @@ export function TarjetaNavegacion({
                 </div>
               ) : esRetiro ? (
                 "Marcar como retirado"
+              ) : esArranque ? (
+                "Iniciar viaje al destino"
               ) : (
                 "Marcar como entregado"
               )}
             </Button>
 
-            {mensajeBloqueo && (
+            {mensajeBloqueo && !esArranque && (
               <p className="text-center text-xs font-bold text-slate-400 mt-2">
                 {mensajeBloqueo}
               </p>

@@ -3,7 +3,6 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { contextoTransportista } from "@/lib/http/handler-utils";
 import { jsonError, jsonOk } from "@/lib/http/response";
-import { envioADto } from "@/lib/http/dto";
 
 export async function GET(req: NextRequest) {
   try {

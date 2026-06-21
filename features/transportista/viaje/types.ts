@@ -1,4 +1,4 @@
-export type EstadoEnvio = "ASIGNADO" | "EN_CAMINO" | "ENTREGADO";
+export type EstadoEnvio = "ACEPTADO" | "RETIRADO" | "EN_CAMINO" | "ENTREGADO";
 
 export type EnvioDB = {
   codigo_envio: string;
@@ -36,4 +36,4 @@ export interface ViajeDetalle {
 
 export type Coordenada = { lat: number; lng: number };
 
-export type Fase = "HACIA_RETIRO" | "HACIA_ENTREGA";
+export type Fase = "HACIA_RETIRO" | "HACIA_ENTREGA" | "LISTO_PARA_ARRANCAR";

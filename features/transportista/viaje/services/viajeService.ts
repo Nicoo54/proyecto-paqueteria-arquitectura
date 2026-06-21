@@ -1,29 +1,39 @@
+import { ApiFetch } from "@/shared/api-client";
 import { EnvioDB, EstadoEnvio } from "../types";
+import { API_ENDPOINTS } from "@/lib/api-contract";
 
-// TODO: Reemplazar por llamadas reales a la API
 export const viajeService = {
-  async fetchEnvio(id: string): Promise<EnvioDB> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          codigo_envio: id,
-          estado: "ASIGNADO",
-          origen_direccion: "Mitre 150, Bahía Blanca",
-          origen_lat: -38.7183,
-          origen_lng: -62.2663,
-          destino_direccion: "Alem 1253, Bahía Blanca",
-          destino_lat: -38.6983,
-          destino_lng: -62.2463,
-        });
-      }, 600);
-    });
+  async obtenerEnvio(id: string, apiFetch: ApiFetch): Promise<EnvioDB | null> {
+    const response = await apiFetch(
+      API_ENDPOINTS.TRANSPORTISTA.DETALLES_VIAJE_ACTIVO(id),
+    );
+
+    if (!response) {
+      return null;
+    }
+
+    const envioMapeado: EnvioDB = {
+      codigo_envio: response.id,
+      estado: response.estado,
+      origen_direccion: response.origenDireccion,
+      origen_lat: response.origenLat,
+      origen_lng: response.origenLng,
+      destino_direccion: response.destinoDireccion,
+      destino_lat: response.destinoLat,
+      destino_lng: response.destinoLng,
+    };
+
+    return envioMapeado;
   },
 
-  // PATCH /api/envios/:id/estado
   async actualizarEstadoEnvio(
     id: string,
     nuevoEstado: EstadoEnvio,
+    apiFetch: ApiFetch,
   ): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, 800));
+    return apiFetch(API_ENDPOINTS.ENVIOS.CAMBIAR_ESTADO(id), {
+      method: "PATCH",
+      body: JSON.stringify({ estado: nuevoEstado }),
+    });
   },
 };

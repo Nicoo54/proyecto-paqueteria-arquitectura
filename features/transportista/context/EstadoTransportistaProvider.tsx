@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Coordenada } from "../viaje/types";
 import { useApiClient } from "@/shared/api-client";
 import { disponibilidadService } from "../services/trackeoService";
@@ -114,10 +120,10 @@ export function EstadoTransportistaProvider({
     );
   };
 
-  const marcarEnViaje = (activo: boolean) => {
+  const marcarEnViaje = useCallback((activo: boolean) => {
     setEnViaje(activo);
     if (activo) setIsOnline(true);
-  };
+  }, []);
 
   return (
     <EstadoTransportistaContext.Provider
