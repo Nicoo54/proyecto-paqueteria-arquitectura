@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { EnvioActivo } from "../types/cliente";
-import { clienteService } from "../services/clienteService";
+import { useApiClient } from "@/shared/api-client";
+import { enviosService } from "../services/enviosService";
 
 export function useEnvioActivo() {
+  const { apiFetch } = useApiClient();
   const { userId, isLoaded } = useAuth();
   const [envioActivo, setEnvioActivo] = useState<EnvioActivo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Si Clerk todavía está cargando la sesión, no hacemos nada
     if (!isLoaded) return;
 
-    // Si no hay usuario logueado, cortamos la carga
     if (!userId) {
       setIsLoading(false);
       return;
@@ -20,8 +20,8 @@ export function useEnvioActivo() {
 
     let isMounted = true;
 
-    clienteService
-      .obtenerEnvioActivo(userId)
+    enviosService
+      .obtenerEnvioActivo(apiFetch)
       .then((data) => {
         if (!isMounted) return;
         setEnvioActivo(data);
