@@ -4,14 +4,12 @@ import { use, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MapRef } from "react-map-gl/mapbox";
 import { useNavegacionEnvio } from "@/features/transportista/viaje/hooks/useNavegacionEnvio";
-import { useUbicacionEnVivo } from "@/features/transportista/viaje/hooks/useUbicacionEnVivo";
 import { useRutaMapbox } from "@/features/transportista/viaje/hooks/useRutaMapbox";
 import { MapaNavegacion } from "@/components/Transportista/viaje/MapaNavegacion";
 import { TarjetaNavegacion } from "@/components/Transportista/viaje/TarjetaNavegacion";
 import { distanciaKm } from "@/lib/utils";
 import { DISTANCIA_MAXIMA_CONFIRMACION_KM } from "@/features/transportista/viaje/constants";
 import { ModalEntregaCompletada } from "@/components/Transportista/viaje/ModalEntregaCompletada";
-import { useUbicacionSimulada } from "@/features/transportista/viaje/hooks/useUbicacionSimulada";
 import { useEstadoTransportista } from "@/features/transportista/context/EstadoTransportistaProvider";
 import ErrorTracking from "@/components/Transportista/viaje/ErrorTracking";
 
@@ -28,20 +26,14 @@ export default function NavegacionViajePage({
   const { envio, fase, destinoActual, isUpdating, confirmarPaso, error } =
     useNavegacionEnvio(id);
 
-  const useUbicacion =
-    process.env.NEXT_PUBLIC_SIMULAR_GPS === "true"
-      ? useUbicacionSimulada
-      : useUbicacionEnVivo;
-
-  const { ubicacion, error: errorGps } = useUbicacion(destinoActual);
+  const { ubicacion, marcarEnViaje } = useEstadoTransportista();
+  const errorGps = null;
 
   const { geometria, distanciaTexto, duracionTexto } = useRutaMapbox(
     ubicacion,
     destinoActual,
     mapboxToken,
   );
-
-  const { marcarEnViaje } = useEstadoTransportista();
 
   const [mostrarModalEntrega, setMostrarModalEntrega] = useState(false);
 
