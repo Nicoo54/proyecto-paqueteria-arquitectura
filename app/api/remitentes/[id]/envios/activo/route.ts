@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
     }
 
     const data = {
-      id: `ENV-${envioActivo.id}`,
+      id: `${envioActivo.id}`,
       estado: envioActivo.estado,
       origen: envioActivo.origenDireccion,
       destino: envioActivo.destinoDireccion,
