@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DraftEnvio } from "../types/checkout";
 import { checkoutService } from "../services/checkoutService";
+import { useApiClient } from "@/shared/api-client";
 
 export function useCheckout() {
   const router = useRouter();
   const [draft, setDraft] = useState<DraftEnvio | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-
+  const { apiFetch } = useApiClient();
   useEffect(() => {
     const savedDraft = sessionStorage.getItem("draft_envio");
     if (savedDraft) {
@@ -22,18 +23,14 @@ export function useCheckout() {
     setIsProcessing(true);
 
     try {
-      const linkPago = await checkoutService.generarLinkMercadoPago(draft);
+      const linkPago = await checkoutService.generarLinkMercadoPago(
+        draft,
+        apiFetch,
+      );
 
-      // SIMULACIÓN DE FLUJO
-      console.log("Redirigiendo a MercadoPago:", linkPago);
-      setTimeout(() => {
-        sessionStorage.removeItem("draft_envio"); // Limpiar caché tras pago
-        alert("Pago aprobado en MercadoPago ✅ (Simulación)");
-        router.push("/cliente");
-      }, 1500);
+      sessionStorage.removeItem("draft_envio");
 
-      // TODO EN PRODUCCIÓN:
-      // window.location.href = linkPago;
+      window.location.href = linkPago;
     } catch (error) {
       console.error("Error al procesar el pago:", error);
       setIsProcessing(false);
