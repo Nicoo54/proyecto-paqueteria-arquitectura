@@ -64,7 +64,7 @@ export default function EnviosTabla({ envios }: EnviosTablaProps) {
                     </span>
                   </td>
                   <td className="px-6 py-4 font-bold text-slate-900">
-                    ${envio.costo.toFixed(2)}
+                    ${envio.costo}
                   </td>
                   <td className="px-6 py-4">
                     <span

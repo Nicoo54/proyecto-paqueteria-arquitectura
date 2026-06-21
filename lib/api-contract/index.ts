@@ -60,6 +60,7 @@ export const API_ENDPOINTS = {
     VIAJE_ACTIVO: "/api/transportistas/me/envios/viaje-activo",
     DETALLES_VIAJE_ACTIVO: (id: number | string) =>
       `/api/transportistas/me/envios/viaje-activo/${id}`,
+    DETALLE: (dni: string) => `/api/transportistas/${dni}`,
   },
   ENVIOS: {
     EXPLORAR: "/api/envios",
