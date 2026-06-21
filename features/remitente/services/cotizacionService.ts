@@ -29,7 +29,6 @@ export const cotizacionService = {
     return {
       precio: res.precio,
       eta: `${res.tiempoEstimadoMinutos} min`,
-      distancia: "N/A", // El backend por ahora no devuelve la distancia, se puede calcular en el frontend si es necesario
     };
   },
 
