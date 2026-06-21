@@ -22,7 +22,19 @@ export function useApiClient() {
       });
 
       if (!res.ok) {
-        throw new Error(`Error HTTP: ${res.status} ${res.statusText}`);
+        let mensajeError = `Error HTTP: ${res.status} ${res.statusText}`;
+
+        try {
+          const errorData = await res.json();
+
+          if (errorData && errorData.error) {
+            mensajeError = errorData.error;
+          }
+        } catch (e) {
+          // Si no se pudo parsear el JSON, dejamos el mensaje genérico
+        }
+
+        throw new Error(mensajeError);
       }
 
       if (res.status === 204) return null;

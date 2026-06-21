@@ -9,7 +9,7 @@ export interface CotizacionRequest {
 export interface CotizacionResponse {
   precio: number;
   eta: string;
-  distancia: string;
+  distancia?: string;
 }
 
 export interface TamanoPaquete {
