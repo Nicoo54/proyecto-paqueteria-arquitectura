@@ -1,14 +1,19 @@
+import { ApiFetch } from "@/shared/api-client";
+
 export interface ResenaPayload {
-  codigo_seguimiento: string;
   puntaje: number;
-  comentario: string;
+  comentario?: string;
 }
 
-// TODO: Cambiar esta función para que haga una llamada real a la API para calificar un envío.
 export const calificacionService = {
-  async enviarResena(payload: ResenaPayload): Promise<void> {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(), 800);
+  async enviarResena(
+    codigoEnvio: string,
+    payload: ResenaPayload,
+    apiFetch: ApiFetch,
+  ): Promise<void> {
+    await apiFetch(`/api/envios/${codigoEnvio}/resenas`, {
+      method: "POST",
+      body: JSON.stringify(payload),
     });
   },
 };

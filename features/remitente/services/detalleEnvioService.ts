@@ -12,11 +12,15 @@ export const detalleEnvioService = {
     const envio = await response.json();
 
     // Idealmente deberíamos tener esta información en la respuesta del envío para evitar una
-    // llamada adicional pero por ahora hacemos esta consulta para obtener los detalles del
-    // transportista asignado.
-    const detallesTransportista = await fetch(
-      API_ENDPOINTS.TRANSPORTISTA.DETALLE(envio.transportistaDni),
-    ).then((r) => r.json());
+    // llamadas adicionales pero por ahora hacemos estas consulta aqui para mostrar
+    // todo en la UI
+    const [detallesTransportista, detallesReseña] = await Promise.all([
+      fetch(API_ENDPOINTS.TRANSPORTISTA.DETALLE(envio.transportistaDni)).then(
+        (r) => r.json(),
+      ),
+      fetch(API_ENDPOINTS.ENVIOS.RESENA(envio.id)).then((r) => r.json()),
+    ]);
+
     return {
       codigo_envio: envio.id.toString(),
       categoria_paquete: envio.categoriaPaquete,
@@ -38,6 +42,7 @@ export const detalleEnvioService = {
             rating: detallesTransportista.promedioCalificacion,
           }
         : undefined,
+      resena: detallesReseña !== null ? detallesReseña.resena : undefined,
     };
   },
 };

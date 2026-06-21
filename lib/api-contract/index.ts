@@ -67,6 +67,7 @@ export const API_ENDPOINTS = {
     DETALLE: (id: number | string) => `/api/envios/${id}`,
     CAMBIAR_ESTADO: (id: number | string) => `/api/envios/${id}/estado`,
     TRACKING: (id: number | string) => `/api/envios/${id}/tracking`,
+    RESENA: (id: number | string) => `/api/envios/${id}/resenas`,
   },
   JOBS: {
     LIQUIDACION: "/api/jobs/liquidacion",

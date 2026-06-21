@@ -29,7 +29,6 @@ export default function DetalleHistorialPage({
   const router = useRouter();
 
   const { envio, isLoading, error } = useDetalleEnvio(id);
-
   if (isLoading) {
     return (
       <div className="flex h-[50vh] items-center justify-center w-full">
