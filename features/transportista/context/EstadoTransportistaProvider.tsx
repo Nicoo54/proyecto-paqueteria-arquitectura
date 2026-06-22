@@ -18,10 +18,14 @@ interface EstadoTransportistaContextType {
   ubicacion: Coordenada | null;
   toggleOnline: () => void;
   marcarEnViaje: (activo: boolean) => void;
+  forzarUbicacionSimulada: (coords: Coordenada) => void;
 }
 
 const EstadoTransportistaContext =
   createContext<EstadoTransportistaContextType | null>(null);
+
+const MODO_DEMO_ACTIVO = process.env.NEXT_PUBLIC_ENABLE_SIMULATOR === "true";
+const PLAZA_RIVADAVIA: Coordenada = { lat: -38.7183, lng: -62.2663 };
 
 export function EstadoTransportistaProvider({
   children,
@@ -33,6 +37,18 @@ export function EstadoTransportistaProvider({
   const [enViaje, setEnViaje] = useState(false);
   const [gpsHabilitado, setGpsHabilitado] = useState(false);
   const [ubicacion, setUbicacion] = useState<Coordenada | null>(null);
+
+  const forzarUbicacionSimulada = useCallback(
+    (coords: Coordenada) => {
+      setUbicacion(coords);
+
+      disponibilidadService.actualizarUbicacion(
+        { latitud: coords.lat, longitud: coords.lng },
+        apiFetch,
+      );
+    },
+    [apiFetch],
+  );
 
   // Monitorea si el permiso de ubicación está otorgado, y reacciona si lo revocan
   useEffect(() => {
@@ -63,6 +79,8 @@ export function EstadoTransportistaProvider({
   useEffect(() => {
     if (!isOnline) return;
 
+    if (MODO_DEMO_ACTIVO) return;
+
     const watchId = navigator.geolocation.watchPosition(
       (pos) => {
         const lat = pos.coords.latitude;
@@ -92,6 +110,18 @@ export function EstadoTransportistaProvider({
     if (isOnline) {
       setIsOnline(false);
       disponibilidadService.actualizarDisponibilidad(false, apiFetch);
+      return;
+    }
+
+    if (MODO_DEMO_ACTIVO) {
+      setUbicacion(PLAZA_RIVADAVIA);
+      setGpsHabilitado(true);
+      setIsOnline(true);
+      disponibilidadService.actualizarDisponibilidad(true, apiFetch);
+      disponibilidadService.actualizarUbicacion(
+        { latitud: PLAZA_RIVADAVIA.lat, longitud: PLAZA_RIVADAVIA.lng },
+        apiFetch,
+      );
       return;
     }
 
@@ -134,6 +164,7 @@ export function EstadoTransportistaProvider({
         ubicacion,
         toggleOnline,
         marcarEnViaje,
+        forzarUbicacionSimulada,
       }}
     >
       {children}
