@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { EnvioTracking, UbicacionCoordenadas } from "../types/tracking";
 import { trackingService } from "../services/trackingService";
 
-const POLLING_INTERVAL_MS = 10000;
+const POLLING_INTERVAL_MS = 1000;
 
 export function useTracking(id: string) {
   const [envio, setEnvio] = useState<EnvioTracking | null>(null);
@@ -29,7 +29,10 @@ export function useTracking(id: string) {
     trackingService.obtenerEnvioTracking(id).then((data) => {
       if (!isMounted) return;
       setEnvio(data);
-      setUbicacionMoto({ lat: data.origen_lat, lng: data.origen_lng });
+
+      const latTransportista = data.transportistaUltimaLat ?? data.origen_lat;
+      const lngTransportista = data.transportistaUltimaLng ?? data.origen_lng;
+      setUbicacionMoto({ lat: latTransportista, lng: lngTransportista });
       setIsLoading(false);
     });
 
@@ -42,7 +45,9 @@ export function useTracking(id: string) {
   useEffect(() => {
     if (!envio) return;
 
-    if (envio.estado !== "EN_CAMINO") {
+    const ESTADOS_POLLING = ["BUSCANDO", "ACEPTADO", "RETIRADO", "EN_CAMINO"];
+
+    if (!ESTADOS_POLLING.includes(envio.estado)) {
       setWsStatus("Estatico");
       detenerPolling();
       return;
@@ -53,11 +58,14 @@ export function useTracking(id: string) {
     pollingRef.current = setInterval(async () => {
       try {
         const data = await trackingService.obtenerEnvioTracking(id);
-        setEnvio(data);
-        setUbicacionMoto({ lat: data.origen_lat, lng: data.origen_lng });
 
-        // Si el envío pasó a ENTREGADO, se detiene el polling
-        if (data.estado !== "EN_CAMINO") {
+        setEnvio(data);
+
+        const latTransportista = data.transportistaUltimaLat ?? data.origen_lat;
+        const lngTransportista = data.transportistaUltimaLng ?? data.origen_lng;
+        setUbicacionMoto({ lat: latTransportista, lng: lngTransportista });
+
+        if (!ESTADOS_POLLING.includes(data.estado)) {
           setWsStatus("Estatico");
           detenerPolling();
         }

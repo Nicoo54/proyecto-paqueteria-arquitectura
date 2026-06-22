@@ -12,7 +12,10 @@ export default function HeaderTracking({
   estadoEnvio,
 }: HeaderTrackingProps) {
   const router = useRouter();
-  const esEnCamino = estadoEnvio === "EN_CAMINO";
+  const esEnCamino =
+    estadoEnvio === "EN_CAMINO" ||
+    estadoEnvio === "ACEPTADO" ||
+    estadoEnvio === "RETIRADO";
   const esEntregado = estadoEnvio === "ENTREGADO";
 
   return (

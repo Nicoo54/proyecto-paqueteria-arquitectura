@@ -12,6 +12,7 @@ import { DISTANCIA_MAXIMA_CONFIRMACION_KM } from "@/features/transportista/viaje
 import { ModalEntregaCompletada } from "@/components/Transportista/viaje/ModalEntregaCompletada";
 import { useEstadoTransportista } from "@/features/transportista/context/EstadoTransportistaProvider";
 import ErrorTracking from "@/components/Transportista/viaje/ErrorTracking";
+import { useSimuladorPaseo } from "@/features/transportista/viaje/hooks/useSimulador";
 
 export default function NavegacionViajePage({
   params,
@@ -26,7 +27,8 @@ export default function NavegacionViajePage({
   const { envio, fase, destinoActual, isUpdating, confirmarPaso, error } =
     useNavegacionEnvio(id);
 
-  const { ubicacion, marcarEnViaje } = useEstadoTransportista();
+  const { ubicacion, marcarEnViaje, forzarUbicacionSimulada } =
+    useEstadoTransportista();
   const errorGps = null;
 
   const { geometria, distanciaTexto, duracionTexto } = useRutaMapbox(
@@ -35,12 +37,25 @@ export default function NavegacionViajePage({
     mapboxToken,
   );
 
+  useSimuladorPaseo(geometria, forzarUbicacionSimulada);
+
   const [mostrarModalEntrega, setMostrarModalEntrega] = useState(false);
 
   useEffect(() => {
     marcarEnViaje(true);
     return () => marcarEnViaje(false);
   }, [marcarEnViaje]);
+
+  useEffect(() => {
+    if (mapRef.current && ubicacion) {
+      mapRef.current.flyTo({
+        center: [ubicacion.lng, ubicacion.lat],
+        duration: 800,
+        zoom: 14.5,
+        pitch: 45,
+      });
+    }
+  }, [ubicacion]);
 
   if (!envio || !fase || !destinoActual) {
     return error ? (

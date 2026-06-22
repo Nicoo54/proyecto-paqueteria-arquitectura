@@ -3,7 +3,7 @@ import { EnvioTracking } from "../types/tracking";
 export const trackingService = {
   async obtenerEnvioTracking(id: string): Promise<EnvioTracking> {
     const response = await fetch(`/api/envios/${id}`);
-    
+    console.warn(`Fetching tracking for envio ID: ${id}`);
     if (!response.ok) {
       throw new Error(`Error fetching tracking: ${response.statusText}`);
     }
@@ -18,11 +18,15 @@ export const trackingService = {
       destino_direccion: envio.destinoDireccion,
       destino_lat: envio.destinoLat,
       destino_lng: envio.destinoLng,
-      chofer: envio.transportistaDni ? {
-        nombre: envio.transportistaDni,
-        vehiculo: "Vehículo",
-        rating: 5.0,
-      } : undefined,
+      transportistaUltimaLat: envio.moto_lat,
+      transportistaUltimaLng: envio.moto_lng,
+      chofer: envio.transportistaDni
+        ? {
+            nombre: envio.transportistaDni,
+            vehiculo: "Vehículo",
+            rating: 5.0,
+          }
+        : undefined,
     };
   },
 };

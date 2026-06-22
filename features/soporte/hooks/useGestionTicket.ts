@@ -1,8 +1,10 @@
 import { gestionTicketService } from "@/features/soporte/services/gestionTicketService";
 import { TicketGestionDetalle } from "@/features/soporte/types/ticketGestion";
+import { useApiClient } from "@/shared/api-client";
 import { useState, useEffect } from "react";
 
 export function useGestionTicket(id: string) {
+  const { apiFetch } = useApiClient();
   const [ticket, setTicket] = useState<TicketGestionDetalle | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +18,7 @@ export function useGestionTicket(id: string) {
     let isMounted = true;
 
     gestionTicketService
-      .obtenerDetalleTicket(id)
+      .obtenerDetalleTicket(id, apiFetch)
       .then((data) => {
         if (!isMounted) return;
         setTicket(data);
@@ -43,8 +45,8 @@ export function useGestionTicket(id: string) {
       await gestionTicketService.resolverTicket(
         ticket.codigo_reclamo,
         resolucionText,
+        apiFetch,
       );
-      // Actualizamos el estado local para reflejar que ya está cerrado
       setTicket({ ...ticket, estado: "RESUELTO", resolucion: resolucionText });
       setMensajeExito(true);
     } catch (err) {

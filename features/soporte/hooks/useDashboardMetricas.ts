@@ -3,9 +3,11 @@ import {
   ConsolidadorMetricas,
   ZonaCalienteDB,
 } from "@/features/soporte/types/metricas";
+import { useApiClient } from "@/shared/api-client";
 import { useState, useEffect } from "react";
 
 export function useDashboardMetricas() {
+  const { apiFetch } = useApiClient();
   const [metricas, setMetricas] = useState<ConsolidadorMetricas | null>(null);
   const [zonas, setZonas] = useState<ZonaCalienteDB[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,8 +57,8 @@ export function useDashboardMetricas() {
     let isMounted = true;
 
     Promise.all([
-      metricasService.obtenerMétricasBatch(),
-      metricasService.obtenerZonasCalientes(),
+      metricasService.obtenerMétricasBatch(apiFetch),
+      metricasService.obtenerZonasCalientes(apiFetch),
     ]).then(([resMetricas, resZonas]) => {
       if (!isMounted) return;
 

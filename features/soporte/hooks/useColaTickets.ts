@@ -1,8 +1,10 @@
 import { soporteService } from "@/features/soporte/services/soporteService";
 import { TicketPendiente } from "@/features/soporte/types/soporte";
+import { useApiClient } from "@/shared/api-client";
 import { useState, useEffect } from "react";
 
 export function useColaTickets() {
+  const { apiFetch } = useApiClient();
   const [tickets, setTickets] = useState<TicketPendiente[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isActionProcessing, setIsActionProcessing] = useState<string | null>(
@@ -10,7 +12,7 @@ export function useColaTickets() {
   );
 
   const cargarCola = () => {
-    soporteService.obtenerColaPendientes().then((data) => {
+    soporteService.obtenerColaPendientes(apiFetch).then((data) => {
       setTickets(data);
       setIsLoading(false);
     });
@@ -23,8 +25,7 @@ export function useColaTickets() {
   const asignarTicketASoporte = async (id: string, onSuccess: () => void) => {
     setIsActionProcessing(id);
     try {
-      const mockDniSoporte = "38123456"; // Sacado de Clerk en producción
-      await soporteService.tomarTicket(id, mockDniSoporte);
+      await soporteService.tomarTicket(id, apiFetch);
       onSuccess();
     } catch (error) {
       console.error(error);

@@ -33,8 +33,7 @@ export const HistorialEnviosQuerySchema = PaginacionSchema;
 export const ExplorarEnviosQuerySchema = z.object({
   lat: z.coerce.number().pipe(LatSchema),
   lng: z.coerce.number().pipe(LngSchema),
-  // No estoy en bahia, es para probar si funciona. Dsp limitar a 50km
-  radioKm: z.coerce.number().int().min(1).max(500).default(5),
+  radioKm: z.coerce.number().int().min(1).max(50).default(5),
 });
 export type ExplorarEnviosQueryInput = z.infer<
   typeof ExplorarEnviosQuerySchema

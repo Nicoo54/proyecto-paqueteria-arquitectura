@@ -14,6 +14,8 @@ export interface EnvioTracking {
   destino_lat: number;
   destino_lng: number;
   chofer?: ChoferTracking;
+  transportistaUltimaLat: number | null;
+  transportistaUltimaLng: number | null;
   resena?: { puntaje: number; comentario?: string };
 }
 

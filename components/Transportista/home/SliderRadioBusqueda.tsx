@@ -25,7 +25,7 @@ export function SliderRadioBusqueda({ radioKm, onChange }: Props) {
       <input
         type="range"
         min="1"
-        max="500"
+        max="50"
         step="1"
         value={radioKm}
         onChange={(e) => onChange(Number(e.target.value))}

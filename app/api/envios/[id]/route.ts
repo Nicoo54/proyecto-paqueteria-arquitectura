@@ -7,37 +7,48 @@ import { parseConSchema } from "@/lib/validation/parse";
 import { contextoTransportista, leerBody } from "@/lib/http/handler-utils";
 import { jsonError, jsonOk } from "@/lib/http/response";
 import { ResponseEnvio } from "../../../../lib/responses";
-import { auth } from '@clerk/nextjs/server';
+import { auth } from "@clerk/nextjs/server";
 import { prisma } from "../../../../lib/prisma";
 
 type Params = Promise<{ id: string }>;
 
 export async function GET(req: NextRequest, { params }: { params: Params }) {
-    try {
-        const { userId } = await auth();
-        
-        if (!userId) {
-            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-        }
+  try {
+    const { userId } = await auth();
 
-        const { id } = await params;
-
-        if (!Number.isInteger(Number(id))) {
-            return NextResponse.json({ error: "Identificador invalido" }, { status: 400 });
-        }
-
-        const envio = await prisma.envio.findUnique({ where: { id: Number(id) } });
-
-        if (!envio) {
-            return NextResponse.json({ error: "No se encontro el envio" }, { status: 404 });
-        }
-
-        return NextResponse.json(ResponseEnvio(envio));
-
-    } catch (error) {
-        console.log("GET /api/envios/[id]", error);
-        return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
+    if (!userId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
+
+    const { id } = await params;
+
+    if (!Number.isInteger(Number(id))) {
+      return NextResponse.json(
+        { error: "Identificador invalido" },
+        { status: 400 },
+      );
+    }
+
+    const envio = await prisma.envio.findUnique({
+      where: { id: Number(id) },
+      include: { transportista: true },
+    });
+
+    if (!envio) {
+      return NextResponse.json(
+        { error: "No se encontro el envio" },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json(ResponseEnvio(envio));
+  } catch (error) {
+    console.log("GET /api/envios/[id]", error);
+    return NextResponse.json(
+      { error: "Error interno del servidor" },
+      { status: 500 },
+    );
+  }
 }
 
 export async function PATCH(req: NextRequest, ctx: { params: Params }) {
@@ -46,7 +57,15 @@ export async function PATCH(req: NextRequest, ctx: { params: Params }) {
     const { id } = await ctx.params;
     const envioId = Number(id);
     if (!Number.isInteger(envioId) || envioId <= 0) {
-      return jsonOk({ error: { code: "ID_INVALIDO", message: "El id del envío debe ser un entero positivo" } }, 400);
+      return jsonOk(
+        {
+          error: {
+            code: "ID_INVALIDO",
+            message: "El id del envío debe ser un entero positivo",
+          },
+        },
+        400,
+      );
     }
 
     const body = await leerBody(req);
@@ -55,18 +74,27 @@ export async function PATCH(req: NextRequest, ctx: { params: Params }) {
       return jsonOk(parse.error.body, parse.error.status);
     }
 
-    const ultima = await deps.repositorios.transportistas.obtenerUltimaUbicacion(authTransportista.dni);
+    const ultima =
+      await deps.repositorios.transportistas.obtenerUltimaUbicacion(
+        authTransportista.dni,
+      );
     const r = await deps.casosDeUso.aceptarEnvio.ejecutar({
       transportistaDni: authTransportista.dni,
       envioId,
-      posicionTransportista: ultima ? { lat: ultima.lat, lng: ultima.lng } : null,
+      posicionTransportista: ultima
+        ? { lat: ultima.lat, lng: ultima.lng }
+        : null,
     });
 
     const envio = await deps.repositorios.envios.obtenerPorId(r.envioId);
     if (envio === null) {
       return jsonError(new Error("Envío no encontrado tras aceptar"));
     }
-    return jsonOk({ id: envio.id, estado: envio.estado, transportistaDni: envio.transportistaDni });
+    return jsonOk({
+      id: envio.id,
+      estado: envio.estado,
+      transportistaDni: envio.transportistaDni,
+    });
   } catch (e) {
     return jsonError(e);
   }

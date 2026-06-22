@@ -17,6 +17,7 @@ export function useRutaMapbox(
   const [duracionTexto, setDuracionTexto] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const ultimoDestino = useRef<Coordenada | null>(null);
   const ultimaConsulta = useRef<{ tiempo: number; pos: Coordenada } | null>(
     null,
   );
@@ -27,14 +28,21 @@ export function useRutaMapbox(
     const ahora = Date.now();
     const previa = ultimaConsulta.current;
 
+    const destinoCambio =
+      !ultimoDestino.current ||
+      ultimoDestino.current.lat !== destino.lat ||
+      ultimoDestino.current.lng !== destino.lng;
+
     const debeRecalcular =
       !previa ||
+      destinoCambio ||
       ahora - previa.tiempo > INTERVALO_MINIMO_MS ||
       distanciaKm(previa.pos, origen) > DISTANCIA_MINIMA_KM;
 
     if (!debeRecalcular) return;
 
     ultimaConsulta.current = { tiempo: ahora, pos: origen };
+    ultimoDestino.current = destino;
     setIsLoading(true);
 
     const url =

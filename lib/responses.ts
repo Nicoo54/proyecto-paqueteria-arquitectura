@@ -22,6 +22,15 @@ export function ResponseEnvio(envio: any) {
       zonaCalienteId: envio.zonaCalienteId,
     }),
 
+    ...(envio.transportista && {
+      moto_lat: envio.transportista.ultimaLat
+        ? Number(envio.transportista.ultimaLat)
+        : null,
+      moto_lng: envio.transportista.ultimaLng
+        ? Number(envio.transportista.ultimaLng)
+        : null,
+    }),
+
     createdAt: envio.createdAt,
     updatedAt: envio.updatedAt,
   };
@@ -38,7 +47,7 @@ export function ResponseTicket(ticket: any) {
     motivo: ticket.motivo,
     estado: ticket.estado,
     creadoEn: ticket.createdAt,
-
+    actualizadoEn: ticket.updatedAt,
     ...(ticket.helperDni !== null && {
       dniSoporteTecnico: ticket.helperDni,
     }),
