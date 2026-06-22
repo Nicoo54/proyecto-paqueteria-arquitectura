@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { EnvioTracking, UbicacionCoordenadas } from "../types/tracking";
 import { trackingService } from "../services/trackingService";
 
-const POLLING_INTERVAL_MS = 3000;
+const POLLING_INTERVAL_MS = 1000;
 
 export function useTracking(id: string) {
   const [envio, setEnvio] = useState<EnvioTracking | null>(null);
@@ -58,13 +58,14 @@ export function useTracking(id: string) {
     pollingRef.current = setInterval(async () => {
       try {
         const data = await trackingService.obtenerEnvioTracking(id);
+
         setEnvio(data);
+
         const latTransportista = data.transportistaUltimaLat ?? data.origen_lat;
         const lngTransportista = data.transportistaUltimaLng ?? data.origen_lng;
         setUbicacionMoto({ lat: latTransportista, lng: lngTransportista });
 
-        // Si el envío pasó a ENTREGADO, se detiene el polling
-        if (!ESTADOS_POLLING.includes(envio.estado)) {
+        if (!ESTADOS_POLLING.includes(data.estado)) {
           setWsStatus("Estatico");
           detenerPolling();
         }

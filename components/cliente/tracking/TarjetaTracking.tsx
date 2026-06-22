@@ -7,116 +7,116 @@ import {
   ChevronUp,
   Clock,
   CheckCircle2,
+  Package,
 } from "lucide-react";
 import { EnvioTracking } from "@/features/remitente/types/tracking";
 
 export default function TarjetaTracking({ envio }: { envio: EnvioTracking }) {
-  const [isCardCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const esEnCamino = envio.estado === "EN_CAMINO";
-  const esEntregado = envio.estado === "ENTREGADO";
-  const tieneChofer = envio.chofer !== undefined;
+  const config = {
+    BUSCANDO: {
+      titulo: "Buscando chofer...",
+      color: "bg-slate-900",
+      icon: Package,
+    },
+    ACEPTADO: {
+      titulo: "Transportista asignado",
+      color: "bg-amber-500",
+      icon: MapPin,
+    },
+    RETIRADO: {
+      titulo: "Paquete en camino",
+      color: "bg-blue-600",
+      icon: MapPin,
+    },
+    EN_CAMINO: {
+      titulo: "En camino al destino",
+      color: "bg-emerald-600",
+      icon: MapPin,
+    },
+    ENTREGADO: {
+      titulo: "Paquete Entregado",
+      color: "bg-emerald-700",
+      icon: CheckCircle2,
+    },
+  };
+
+  const current =
+    config[envio.estado as keyof typeof config] || config.BUSCANDO;
+  const IconoEstado = current.icon;
 
   return (
     <div className="absolute inset-x-0 bottom-0 p-4 pointer-events-none z-10">
       <div className="max-w-md mx-auto pointer-events-auto transition-transform duration-300 ease-in-out">
         <Card className="border-slate-200 shadow-2xl rounded-3xl overflow-hidden bg-white/95 backdrop-blur-md relative">
           <button
-            onClick={() => setIsCollapsed(!isCardCollapsed)}
-            className="absolute right-4 top-3 z-20 w-8 h-8 flex items-center justify-center bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition-colors"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="absolute right-4 top-5 z-20 p-1 bg-white/20 text-white rounded-full hover:bg-white/30 transition-colors"
           >
-            {isCardCollapsed ? (
-              <ChevronUp className="w-4 h-4" />
+            {isCollapsed ? (
+              <ChevronUp className="w-5 h-5" />
             ) : (
-              <ChevronDown className="w-4 h-4" />
+              <ChevronDown className="w-5 h-5" />
             )}
           </button>
 
           <CardContent className="p-0">
-            {/* ENCABEZADO DE ESTADO (3 CASOS) */}
-            <div className="bg-slate-900 text-white p-5 pr-14">
-              {esEnCamino ? (
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-amber-400 font-bold text-xs uppercase tracking-wider mb-1">
-                      Estado del envío
-                    </p>
-                    <h2 className="text-xl font-black tracking-tight">
-                      En camino al destino
-                    </h2>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">
-                      Llega en
-                    </p>
-                    <p className="text-2xl font-bold text-white">~8 min</p>
-                  </div>
-                </div>
-              ) : esEntregado ? (
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="w-8 h-8 text-emerald-400" />
-                  <div>
-                    <p className="text-emerald-400 font-bold text-xs uppercase tracking-wider mb-1">
-                      Viaje Finalizado
-                    </p>
-                    <h2 className="text-xl font-black tracking-tight">
-                      Paquete Entregado
-                    </h2>
-                  </div>
-                </div>
-              ) : (
+            <div
+              className={`${current.color} text-white p-5 pr-14 transition-colors duration-500`}
+            >
+              <div className="flex items-center gap-3">
+                <IconoEstado className="w-6 h-6 text-white/90" />
                 <div>
-                  <p className="text-amber-400 font-bold text-xs uppercase tracking-wider mb-1">
-                    Buscando transportista
+                  <p className="text-white/70 font-bold text-[10px] uppercase tracking-wider">
+                    Estado: {envio.estado}
                   </p>
-                  <h2 className="text-xl font-black tracking-tight animate-pulse">
-                    Asignando un chofer...
+                  <h2 className="text-lg font-black tracking-tight">
+                    {current.titulo}
                   </h2>
                 </div>
-              )}
+              </div>
             </div>
 
-            {/* CUERPO COLAPSABLE */}
             <div
-              className={`transition-all duration-300 ease-in-out overflow-hidden ${isCardCollapsed ? "max-h-0" : "max-h-96"}`}
+              className={`transition-all duration-300 ease-in-out overflow-hidden ${isCollapsed ? "max-h-0" : "max-h-96"}`}
             >
-              {/* Si ya hay chofer asignado (En camino o Entregado), lo mostramos */}
-              {tieneChofer ? (
-                <div className="p-5 flex items-center gap-4 border-b border-slate-100 bg-white">
-                  <div className="w-11 h-11 bg-slate-100 rounded-full flex items-center justify-center text-xl border border-slate-200">
-                    🛵
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-slate-900 text-base">
-                      {envio.chofer?.nombre}
-                    </h3>
-                    <div className="flex items-center gap-2 text-xs text-slate-500 font-medium mt-0.5">
-                      <span>{envio.chofer?.vehiculo}</span>
-                      <span>•</span>
-                      <span className="flex items-center text-amber-500">
-                        <Star className="w-3 h-3 fill-amber-500 mr-0.5" />{" "}
-                        {envio.chofer?.rating}
-                      </span>
+              {envio.chofer ? (
+                <div className="p-5 flex items-center justify-between border-b border-slate-100 bg-white">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-lg">
+                      🛵
                     </div>
+                    <div>
+                      <h3 className="font-bold text-slate-900">
+                        {envio.chofer.nombre}
+                      </h3>
+                      <p className="text-xs text-slate-500">
+                        {envio.chofer.vehiculo}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-lg">
+                    <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                    <span className="font-bold text-xs">
+                      {envio.chofer.rating}
+                    </span>
                   </div>
                 </div>
               ) : (
-                <div className="p-5 border-b border-slate-100 bg-white flex items-center gap-3 text-sm text-slate-500 font-medium">
-                  <Clock className="w-4 h-4 text-amber-500 animate-spin" />
-                  <span>
-                    Tu envío ya fue pagado. Avisaremos cuando un chofer acepte
-                    el viaje.
-                  </span>
+                <div className="p-5 border-b border-slate-100 bg-white flex items-center gap-3 text-sm text-slate-500">
+                  <Clock className="w-4 h-4 animate-spin" />
+                  <span>Esperando asignación de transportista...</span>
                 </div>
               )}
 
-              <div className="p-5 bg-slate-50/80 flex items-start gap-3">
+              <div className="p-5 bg-slate-50 flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-slate-400 mt-0.5" />
                 <div>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">
-                    Dirección de entrega
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Entrega en
                   </p>
-                  <p className="font-semibold text-slate-900 text-sm leading-tight">
+                  <p className="font-semibold text-slate-900 text-sm">
                     {envio.destino_direccion}
                   </p>
                 </div>

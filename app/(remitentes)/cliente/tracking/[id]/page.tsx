@@ -25,15 +25,21 @@ export default function TrackingPage({
 
   const { envio, ubicacionMoto, wsStatus, isLoading } = useTracking(id);
 
-  // Animar la cámara cuando el transportista se mueva
   useEffect(() => {
-    if (mapRef.current && ubicacionMoto && envio?.estado === "EN_CAMINO") {
+    const ESTADOS_TRACKEABLES = ["ACEPTADO", "RETIRADO", "EN_CAMINO"];
+
+    if (
+      mapRef.current &&
+      ubicacionMoto &&
+      ESTADOS_TRACKEABLES.includes(envio?.estado || "")
+    ) {
       mapRef.current.flyTo({
         center: [ubicacionMoto.lng, ubicacionMoto.lat],
         duration: 2000,
+        zoom: 15,
       });
     }
-  }, [ubicacionMoto, envio]);
+  }, [ubicacionMoto, envio?.estado]);
 
   if (isLoading || !envio || !ubicacionMoto) {
     return (
@@ -79,7 +85,8 @@ export default function TrackingPage({
     );
   }
 
-  const esEnCamino = envio.estado === "EN_CAMINO";
+  const ESTADOS_TRACKEABLES = ["ACEPTADO", "RETIRADO", "EN_CAMINO"];
+  const esTrackeable = ESTADOS_TRACKEABLES.includes(envio.estado);
 
   return (
     <div className="relative h-[calc(100vh-64px)] w-full overflow-hidden bg-slate-200">
@@ -89,29 +96,25 @@ export default function TrackingPage({
             ref={mapRef}
             mapboxAccessToken={mapboxToken}
             initialViewState={{
-              longitude: esEnCamino ? ubicacionMoto.lng : envio.origen_lng,
-              latitude: esEnCamino ? ubicacionMoto.lat : envio.origen_lat,
+              longitude: esTrackeable ? ubicacionMoto.lng : envio.origen_lng,
+              latitude: esTrackeable ? ubicacionMoto.lat : envio.origen_lat,
               zoom: 14.5,
-              pitch: esEnCamino ? 45 : 0,
+              pitch: esTrackeable ? 45 : 0,
             }}
             mapStyle="mapbox://styles/mapbox/navigation-day-v1"
             style={{ width: "100%", height: "100%" }}
           >
-            {/* ... MARCADORES DEL MAPA ... */}
-            {!esEnCamino && (
-              <Marker
-                longitude={envio.origen_lng}
-                latitude={envio.origen_lat}
-                anchor="bottom"
-              >
-                <div className="relative">
-                  <div className="w-8 h-8 bg-slate-900 flex items-center justify-center rounded-full shadow-lg border-2 border-white relative z-10">
-                    <span className="text-white text-xs font-bold">A</span>
-                  </div>
-                  <div className="absolute w-2 h-2 bg-slate-900 rotate-45 -bottom-1 left-3 z-0"></div>
+            <Marker
+              longitude={envio.origen_lng}
+              latitude={envio.origen_lat}
+              anchor="bottom"
+            >
+              <div className="relative">
+                <div className="w-8 h-8 bg-slate-900 flex items-center justify-center rounded-full shadow-lg border-2 border-white relative z-10">
+                  <span className="text-white text-xs font-bold">A</span>
                 </div>
-              </Marker>
-            )}
+              </div>
+            </Marker>
 
             <Marker
               longitude={envio.destino_lng}
@@ -126,7 +129,7 @@ export default function TrackingPage({
               </div>
             </Marker>
 
-            {esEnCamino && (
+            {esTrackeable && (
               <Marker
                 longitude={ubicacionMoto.lng}
                 latitude={ubicacionMoto.lat}
