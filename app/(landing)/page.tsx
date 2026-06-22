@@ -2,8 +2,6 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import HeroActions from "@/components/Landing/HeroActions";
 
-//TODO: Si esta logueado redirigir a su dashboard correspondiente (cliente o transportista)
-
 export default function LandingPage() {
   return (
     <div className="flex flex-col items-center w-full">

@@ -1,16 +1,25 @@
-// TODO: Remplazar a llamada real a la API
+import { ApiFetch } from "@/shared/api-client";
+
 export const onboardingService = {
-  async registrarRemitente(dni: string): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, 1500));
+  async registrarRemitente(dni: string, apiFetch: ApiFetch): Promise<void> {
+    await apiFetch("/api/remitentes", {
+      method: "POST",
+      body: JSON.stringify({ dni }),
+    });
   },
 
-  // TODO: Remplazar a llamada real a la API
-  async registrarTransportista(datos: {
-    dni: string;
-    categoria: string;
-    patente: string;
-    aliasBancario: string;
-  }): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, 1500));
+  async registrarTransportista(
+    datos: {
+      dni: string;
+      categoria: string;
+      patente: string;
+      aliasBancario: string;
+    },
+    apiFetch: ApiFetch,
+  ): Promise<void> {
+    await apiFetch("/api/transportistas", {
+      method: "POST",
+      body: JSON.stringify(datos),
+    });
   },
 };

@@ -25,19 +25,27 @@ const ROL_REQUERIDO: Record<string, string> = {
 export default clerkMiddleware(async (auth, req) => {
   const { userId, redirectToSignIn } = await auth();
   const pathname = req.nextUrl.pathname;
-
+  const path = req.nextUrl.pathname;
   // Caso 1. No logueado: rutas públicas pasan, el resto va al login
   if (!userId) {
     if (isPublicRoute(req)) return;
     return redirectToSignIn();
   }
 
+  // Permitir pasar a las rutas de API sin importar el estado del onboarding,
+  // para que el frontend pueda usarlas para completar el proceso
+  if (
+    path.startsWith("/api/remitentes") ||
+    path.startsWith("/api/transportistas")
+  ) {
+    return NextResponse.next();
+  }
+
   const user = await clerkClient.users.getUser(userId);
   const rol = (user.publicMetadata?.role as string) ?? "remitente";
-  // Cambiar a true si se quiere acceder a la pag de cada usuario
-  // al implementar backend no tocar.
+
   const onboardingCompleto =
-    (user.publicMetadata?.onboardingCompleto as boolean) ?? true;
+    (user.publicMetadata?.onboardingCompleto as boolean) ?? false;
 
   // Caso 2. Onboarding incompleto → solo puede estar en /onboarding o /
   if (!onboardingCompleto) {
