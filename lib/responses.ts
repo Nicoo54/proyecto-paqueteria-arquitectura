@@ -38,7 +38,7 @@ export function ResponseTicket(ticket: any) {
     motivo: ticket.motivo,
     estado: ticket.estado,
     creadoEn: ticket.createdAt,
-
+    actualizadoEn: ticket.updatedAt,
     ...(ticket.helperDni !== null && {
       dniSoporteTecnico: ticket.helperDni,
     }),
