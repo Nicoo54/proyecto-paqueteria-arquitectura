@@ -91,4 +91,11 @@ export class PrismaEnvioRepository implements EnvioRepository {
       },
     };
   }
+
+  async listarEnRango(desde: Date, hasta: Date): Promise<Envio[]> {
+    const registros = await this.db.envio.findMany({
+      where: { createdAt: { gte: desde, lt: hasta } },
+    });
+    return registros.map(envioPrismaADominio);
+  }
 }

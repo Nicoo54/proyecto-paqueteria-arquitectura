@@ -70,4 +70,12 @@ export class InMemoryEnvioRepository implements EnvioRepository {
       pagination: { page: params.page, limit: params.limit, total, totalPages },
     };
   }
+
+  async listarEnRango(desde: Date, hasta: Date): Promise<Envio[]> {
+    return Array.from(this.porId.values()).filter((e) => {
+      if (!e.createdAt) return false;
+      const t = new Date(e.createdAt).getTime();
+      return t >= desde.getTime() && t < hasta.getTime();
+    });
+  }
 }

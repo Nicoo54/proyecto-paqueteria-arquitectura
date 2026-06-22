@@ -30,4 +30,6 @@ export interface EnvioRepository {
     dni: Dni,
     params: PaginacionParams
   ): Promise<PaginacionResultado<Envio>>;
+
+  listarEnRango(desde: Date, hasta: Date): Promise<Envio[]>;
 }

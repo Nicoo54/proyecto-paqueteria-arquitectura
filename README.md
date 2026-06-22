@@ -233,6 +233,7 @@ npx tsx lib/domain/__tests__/run.ts   Correr los ~115 tests
 | `GET`   | `/api/envios` | Explorar envíos BUSCANDO cerca |
 | `PATCH` | `/api/envios/{id}` | Aceptar un envío |
 | `PATCH` | `/api/envios/{id}/estado` | Cambiar estado: RETIRADO / EN_CAMINO / ENTREGADO |
+| `POST`  | `/api/jobs/analitica-nocturna` | Cron nocturno (Pipeline 3) — protegido por `CRON_SECRET` |
 | `POST`  | `/api/jobs/liquidacion` | Cron nocturno (Pipeline 4) — protegido por `CRON_SECRET` |
 
 ### Remitente (implementado en `feature/remitente`)
@@ -498,9 +499,19 @@ Los 5 pipelines del Entregable 4:
 |---|---|---|---|
 | 1 | Tracking GPS | Streaming (polling HTTP) | `app/api/transportistas/me/ubicacion` + `actualizar-ubicacion` use case |
 | 2 | Cotización con clima | Event-driven sincrónico | `app/api/envios/cotizaciones` (Remitente) |
-| 3 | Analítico nocturno | Batch nocturno | _Pendiente — no es de Transportista_ |
+| 3 | Analítico nocturno (Zonas Calientes + Métricas) | Batch nocturno | `app/api/jobs/analitica-nocturna` + `CalcularAnaliticaNocturnaUseCase` |
 | 4 | Liquidación de pagos | Batch nocturno + integración externa | `app/api/jobs/liquidacion` + `LiquidarPagosNocturnaUseCase` |
 | 5 | Recálculo de puntuación | Event-driven in-process | `app/api/envios/{id}/resenas` (Remitente) |
+
+### Pipeline 3 (Analítico nocturno) — detalles
+
+- Disparado por **Vercel Cron** a las 02:00 AM (config en `vercel.json`).
+- Fusiona dos artefactos en un mismo job: Zonas Calientes vigentes para hoy + Métrica diaria del día anterior.
+- Lee envíos del día previo, agrupa orígenes en un grid de ~0.5km, detecta celdas que superan un umbral de densidad, calcula centroide y emite Zona Caliente con vigencia hoy → mañana.
+- Calcula la métrica diaria: cantidad total de envíos y ganancia neta de la plataforma (suma de comisión 15% sobre los entregados).
+- Idempotente: `vencerHasta(hoy)` + `insertarVarias` reemplaza el set de zonas; `UPSERT` en Métrica.
+- Lock distribuido por `pg_try_advisory_lock` evita corridas concurrentes.
+- Para grabar la demo: `curl -X POST http://localhost:3000/api/jobs/analitica-nocturna -H "authorization: Bearer $CRON_SECRET"`.
 
 ### Pipeline 4 (Liquidación) — detalles
 
@@ -602,5 +613,4 @@ del runner.
 ### Pendientes de coordinación
 
 - Cuando Sistemas Externos integre MercadoPago Money Out real para liquidación, reemplazar `FakePasarelaDePagos` por la implementación real (ver comentario en `lib/infrastructure/pasarela/fake-pasarela-pagos.ts`).
-- Pipeline 3 (Analítico nocturno) está documentado pero no implementado. Dueño a definir.
 - Mover de polling a WebSocket si en algún momento el sistema escala (no es necesario para esta demo).

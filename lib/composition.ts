@@ -3,11 +3,13 @@ import {
   prisma,
   PrismaDistributedLock,
   PrismaEnvioRepository,
+  PrismaMetricaRepository,
   PrismaTransaccionRepository,
   PrismaTransportistaRepository,
   PrismaUnitOfWork,
   PrismaUsuarioRepository,
   PrismaVehiculoRepository,
+  PrismaZonaCalienteRepository,
 } from "./infrastructure/prisma";
 import { MercadoPagoPasarela } from "./infrastructure/pasarela";
 import { RelojSistema } from "./application/ports/reloj";
@@ -21,6 +23,7 @@ import {
   RegistrarVehiculoUseCase,
 } from "./application/use-cases/transportista";
 import { LiquidarPagosNocturnaUseCase } from "./application/use-cases/liquidacion";
+import { CalcularAnaliticaNocturnaUseCase } from "./application/use-cases/analitica";
 
 export function crearDependenciasTransportista() {
   const transportistas = new PrismaTransportistaRepository(prisma);
@@ -28,6 +31,8 @@ export function crearDependenciasTransportista() {
   const envios = new PrismaEnvioRepository(prisma);
   const transacciones = new PrismaTransaccionRepository(prisma);
   const usuarios = new PrismaUsuarioRepository(prisma);
+  const zonasCalientes = new PrismaZonaCalienteRepository(prisma);
+  const metricas = new PrismaMetricaRepository(prisma);
   const uow = new PrismaUnitOfWork(prisma);
   const authenticator = new ClerkAuthenticator();
   const lock = new PrismaDistributedLock(prisma);
@@ -35,7 +40,15 @@ export function crearDependenciasTransportista() {
   const pasarela = new MercadoPagoPasarela();
 
   return {
-    repositorios: { transportistas, vehiculos, envios, transacciones, usuarios },
+    repositorios: {
+      transportistas,
+      vehiculos,
+      envios,
+      transacciones,
+      usuarios,
+      zonasCalientes,
+      metricas,
+    },
     ports: { authenticator, lock, reloj, uow, pasarela },
     casosDeUso: {
       aceptarEnvio: new AceptarEnvioUseCase(transportistas, envios, uow),
@@ -50,6 +63,13 @@ export function crearDependenciasTransportista() {
         pasarela,
         lock,
         uow,
+        reloj,
+      }),
+      calcularAnaliticaNocturna: new CalcularAnaliticaNocturnaUseCase({
+        envios,
+        zonas: zonasCalientes,
+        metricas,
+        lock,
         reloj,
       }),
     },
