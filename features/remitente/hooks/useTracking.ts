@@ -29,7 +29,10 @@ export function useTracking(id: string) {
     trackingService.obtenerEnvioTracking(id).then((data) => {
       if (!isMounted) return;
       setEnvio(data);
-      setUbicacionMoto({ lat: data.origen_lat, lng: data.origen_lng });
+
+      const latTransportista = data.transportistaUltimaLat ?? data.origen_lat;
+      const lngTransportista = data.transportistaUltimaLng ?? data.origen_lng;
+      setUbicacionMoto({ lat: latTransportista, lng: lngTransportista });
       setIsLoading(false);
     });
 
@@ -54,7 +57,9 @@ export function useTracking(id: string) {
       try {
         const data = await trackingService.obtenerEnvioTracking(id);
         setEnvio(data);
-        setUbicacionMoto({ lat: data.origen_lat, lng: data.origen_lng });
+        const latTransportista = data.transportistaUltimaLat ?? data.origen_lat;
+        const lngTransportista = data.transportistaUltimaLng ?? data.origen_lng;
+        setUbicacionMoto({ lat: latTransportista, lng: lngTransportista });
 
         // Si el envío pasó a ENTREGADO, se detiene el polling
         if (data.estado !== "EN_CAMINO") {
