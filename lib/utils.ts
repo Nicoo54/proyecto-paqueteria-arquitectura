@@ -17,18 +17,3 @@ export function distanciaKm(a: Coordenada, b: Coordenada) {
       Math.sin(dLng / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(sa));
 }
-
-function formatearFecha(isoString: string): string {
-  if (!isoString) return "Fecha desconocida";
-
-  const fecha = new Date(isoString);
-  return fecha
-    .toLocaleDateString("es-AR", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-    .replace(",", " a las");
-}
