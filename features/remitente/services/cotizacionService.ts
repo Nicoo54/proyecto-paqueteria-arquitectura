@@ -4,30 +4,40 @@ import {
   CotizacionResponse,
   TamanoPaquete,
 } from "../types/cotizacion";
+import { ApiFetch } from "@/shared/api-client";
 
-// TODO: Cambiar a llamadas reales a la API cuando esté disponible
 export const cotizacionService = {
-  async cotizarEnvio(req: CotizacionRequest): Promise<CotizacionResponse> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ precio: 1850.5, eta: "15-20 min", distancia: "3.2 km" });
-      }, 1000);
+  async cotizarEnvio(
+    req: CotizacionRequest,
+    apiFetch: ApiFetch,
+  ): Promise<CotizacionResponse> {
+    const payload = {
+      categoriaPaquete: req.tamano,
+      origenDireccion: req.origen?.nombre,
+      destinoDireccion: req.destino?.nombre,
+      origenLat: req.origen?.lat,
+      origenLng: req.origen?.lng,
+      destinoLat: req.destino?.lat,
+      destinoLng: req.destino?.lng,
+    };
+
+    const res = await apiFetch("/api/envios/cotizaciones", {
+      method: "POST",
+      body: JSON.stringify(payload),
     });
+
+    return {
+      precio: res.precio,
+      eta: `${res.tiempoEstimadoMinutos} min`,
+    };
   },
 
-  // TODO: Cambiar a llamadas reales a la API cuando esté disponible
-  async obtenerTamanosDisponibles(): Promise<TamanoPaquete[]> {
-    return new Promise((resolve) => {
-      setTimeout(
-        () =>
-          resolve([
-            { id: "S", label: "Pequeño", desc: "Llaves, doc.", icon: "✉️" },
-            { id: "M", label: "Mediano", desc: "Caja zapatos", icon: "📦" },
-            { id: "L", label: "Grande", desc: "Mochila", icon: "🛍️" },
-          ]),
-        800,
-      );
-    });
+  obtenerTamanosDisponibles(): TamanoPaquete[] {
+    return [
+      { id: "S", label: "Pequeño", desc: "Llaves, doc.", icon: "✉️" },
+      { id: "M", label: "Mediano", desc: "Caja zapatos", icon: "📦" },
+      { id: "L", label: "Grande", desc: "Mochila", icon: "🛍️" },
+    ];
   },
 
   // Integración externa con Mapbox API

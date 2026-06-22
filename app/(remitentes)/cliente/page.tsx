@@ -27,9 +27,9 @@ export default function ClienteDashboardPage() {
         <EnvioActivoCard
           origen={envioActivo.origen}
           destino={envioActivo.destino}
-          nombreChofer={envioActivo.chofer.nombre}
-          vehiculoChofer={envioActivo.chofer.vehiculo}
-          ratingChofer={envioActivo.chofer.rating}
+          nombreChofer={envioActivo.chofer?.nombre}
+          vehiculoChofer={envioActivo.chofer?.vehiculo}
+          ratingChofer={envioActivo.chofer?.rating}
           etapa={envioActivo.eta}
           idEnvio={envioActivo.id}
         />
@@ -43,9 +43,9 @@ export default function ClienteDashboardPage() {
 interface EnvioActivoCardProps {
   origen: string;
   destino: string;
-  nombreChofer: string;
-  vehiculoChofer: string;
-  ratingChofer: number;
+  nombreChofer: string | null | undefined;
+  vehiculoChofer: string | null | undefined;
+  ratingChofer: number | null | undefined;
   etapa: string;
   idEnvio: string;
 }
@@ -59,21 +59,33 @@ function EnvioActivoCard({
   etapa,
   idEnvio,
 }: EnvioActivoCardProps) {
+  const tieneChofer = nombreChofer !== null && nombreChofer !== undefined;
+
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Tu envío está en curso
+            {tieneChofer ? "Tu envío está en curso" : "Buscando transportista"}
           </h1>
           <p className="text-slate-500 mt-1">
-            El transportista ya tiene tu paquete.
+            {tieneChofer
+              ? "El transportista ya tiene tu paquete."
+              : "En cuanto alguien acepte el viaje, te avisamos."}
           </p>
         </div>
-        <div className="flex items-center gap-2 bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-bold">
-          <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-          En tránsito
-        </div>
+
+        {tieneChofer ? (
+          <div className="flex items-center gap-2 bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-bold">
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+            En tránsito
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-bold">
+            <span className="w-2 h-2 rounded-full bg-slate-400 animate-ping" />
+            Buscando
+          </div>
+        )}
       </div>
 
       <div className="bg-white border border-slate-200 rounded-3xl p-1 shadow-sm">
@@ -100,30 +112,48 @@ function EnvioActivoCard({
             </div>
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-100 mb-8">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-lg">
-                🛵
+          {tieneChofer ? (
+            <div className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-100 mb-8">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-lg">
+                  🛵
+                </div>
+                <div>
+                  <p className="font-bold text-slate-900">{nombreChofer}</p>
+                  <p className="text-xs text-slate-500">
+                    {vehiculoChofer} • ⭐ {ratingChofer}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                  Llega en
+                </p>
+                <p className="font-black text-slate-900 text-lg">{etapa}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-4 p-4 bg-white rounded-xl border border-dashed border-slate-200 mb-8">
+              <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center shrink-0">
+                <span className="w-5 h-5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
               </div>
               <div>
-                <p className="font-bold text-slate-900">{nombreChofer}</p>
-                <p className="text-xs text-slate-500">
-                  {vehiculoChofer} • ⭐ {ratingChofer}
+                <p className="font-bold text-slate-700 text-sm">
+                  Buscando un transportista cercano...
+                </p>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Te notificaremos cuando alguien acepte el viaje.
                 </p>
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                Llega en
-              </p>
-              <p className="font-black text-slate-900 text-lg">{etapa}</p>
-            </div>
-          </div>
+          )}
 
           <Link href={`/cliente/tracking/${idEnvio}`}>
             <Button className="w-full h-14 text-lg font-bold bg-slate-900 text-white hover:bg-slate-800 rounded-xl shadow-md group">
               <Navigation className="w-5 h-5 mr-2 group-hover:animate-bounce" />
-              Abrir mapa de seguimiento en vivo
+              {tieneChofer
+                ? "Abrir mapa de seguimiento en vivo"
+                : "Ver estado del envío"}
             </Button>
           </Link>
         </div>

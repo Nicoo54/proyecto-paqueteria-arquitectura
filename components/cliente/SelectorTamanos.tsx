@@ -14,7 +14,7 @@ export default function SelectorTamanos({
   tamanoSeleccionado,
   onSelect,
 }: SelectorTamanoProps) {
-  const tamanos = use(tamanosPromise);
+  const tamanos = tamanosPromise;
 
   return (
     <div className="grid grid-cols-3 gap-3">

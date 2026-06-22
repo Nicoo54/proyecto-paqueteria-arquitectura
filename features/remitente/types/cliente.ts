@@ -1,4 +1,4 @@
-export interface ChoferActivo {
+export interface ChoferInfo {
   nombre: string;
   vehiculo: string;
   rating: number;
@@ -9,6 +9,6 @@ export interface EnvioActivo {
   estado: string;
   origen: string;
   destino: string;
-  chofer: ChoferActivo;
+  chofer: ChoferInfo | null;
   eta: string;
 }

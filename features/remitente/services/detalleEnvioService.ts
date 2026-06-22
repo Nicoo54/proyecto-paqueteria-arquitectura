@@ -1,14 +1,26 @@
+import { API_ENDPOINTS } from "@/lib/api-contract";
 import { EnvioDetalle } from "../types/detalleEnvio";
 
 export const detalleEnvioService = {
   async obtenerDetalle(id: string): Promise<EnvioDetalle> {
     const response = await fetch(`/api/envios/${id}`);
-    
+
     if (!response.ok) {
       throw new Error(`Error fetching detalle: ${response.statusText}`);
     }
 
     const envio = await response.json();
+
+    // Idealmente deberíamos tener esta información en la respuesta del envío para evitar una
+    // llamadas adicionales pero por ahora hacemos estas consulta aqui para mostrar
+    // todo en la UI
+    const [detallesTransportista, detallesReseña] = await Promise.all([
+      fetch(API_ENDPOINTS.TRANSPORTISTA.DETALLE(envio.transportistaDni)).then(
+        (r) => r.json(),
+      ),
+      fetch(API_ENDPOINTS.ENVIOS.RESENA(envio.id)).then((r) => r.json()),
+    ]);
+
     return {
       codigo_envio: envio.id.toString(),
       categoria_paquete: envio.categoriaPaquete,
@@ -17,15 +29,20 @@ export const detalleEnvioService = {
       condicion_climatica: envio.condicionClimatica,
       estado: envio.estado,
       costo: envio.costo,
-      created_at: new Intl.DateTimeFormat('es-AR', {
-        dateStyle: 'long',
-        timeStyle: 'short'
+      created_at: new Intl.DateTimeFormat("es-AR", {
+        dateStyle: "long",
+        timeStyle: "short",
       }).format(new Date(envio.createdAt)),
-      transportista: envio.transportistaDni ? {
-        nombre: envio.transportistaDni, // Idealmente esto vendria con un join, pero sirve por ahora
-        vehiculo: "Vehículo registrado",
-        rating: 5.0,
-      } : undefined,
+      transportista: envio.transportistaDni
+        ? {
+            nombre: detallesTransportista.nombre,
+            vehiculo: detallesTransportista.vehiculo
+              ? detallesTransportista.vehiculo.categoria
+              : "Vehículo registrado",
+            rating: detallesTransportista.promedioCalificacion,
+          }
+        : undefined,
+      resena: detallesReseña !== null ? detallesReseña.resena : undefined,
     };
   },
 };

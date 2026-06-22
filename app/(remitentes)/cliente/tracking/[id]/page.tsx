@@ -25,7 +25,7 @@ export default function TrackingPage({
 
   const { envio, ubicacionMoto, wsStatus, isLoading } = useTracking(id);
 
-  // Animar la cámara cuando el remitente se mueva
+  // Animar la cámara cuando el transportista se mueva
   useEffect(() => {
     if (mapRef.current && ubicacionMoto && envio?.estado === "EN_CAMINO") {
       mapRef.current.flyTo({

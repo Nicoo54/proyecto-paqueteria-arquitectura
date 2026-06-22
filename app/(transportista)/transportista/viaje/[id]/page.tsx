@@ -4,15 +4,14 @@ import { use, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MapRef } from "react-map-gl/mapbox";
 import { useNavegacionEnvio } from "@/features/transportista/viaje/hooks/useNavegacionEnvio";
-import { useUbicacionEnVivo } from "@/features/transportista/viaje/hooks/useUbicacionEnVivo";
 import { useRutaMapbox } from "@/features/transportista/viaje/hooks/useRutaMapbox";
 import { MapaNavegacion } from "@/components/Transportista/viaje/MapaNavegacion";
 import { TarjetaNavegacion } from "@/components/Transportista/viaje/TarjetaNavegacion";
 import { distanciaKm } from "@/lib/utils";
 import { DISTANCIA_MAXIMA_CONFIRMACION_KM } from "@/features/transportista/viaje/constants";
 import { ModalEntregaCompletada } from "@/components/Transportista/viaje/ModalEntregaCompletada";
-import { useUbicacionSimulada } from "@/features/transportista/viaje/hooks/useUbicacionSimulada";
 import { useEstadoTransportista } from "@/features/transportista/context/EstadoTransportistaProvider";
+import ErrorTracking from "@/components/Transportista/viaje/ErrorTracking";
 
 export default function NavegacionViajePage({
   params,
@@ -24,15 +23,11 @@ export default function NavegacionViajePage({
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
   const mapRef = useRef<MapRef>(null);
 
-  const { envio, fase, destinoActual, isUpdating, confirmarPaso } =
+  const { envio, fase, destinoActual, isUpdating, confirmarPaso, error } =
     useNavegacionEnvio(id);
 
-  const useUbicacion =
-    process.env.NEXT_PUBLIC_SIMULAR_GPS === "true"
-      ? useUbicacionSimulada
-      : useUbicacionEnVivo;
-
-  const { ubicacion, error: errorGps } = useUbicacion(destinoActual);
+  const { ubicacion, marcarEnViaje } = useEstadoTransportista();
+  const errorGps = null;
 
   const { geometria, distanciaTexto, duracionTexto } = useRutaMapbox(
     ubicacion,
@@ -40,17 +35,17 @@ export default function NavegacionViajePage({
     mapboxToken,
   );
 
-  const { marcarEnViaje } = useEstadoTransportista();
-
   const [mostrarModalEntrega, setMostrarModalEntrega] = useState(false);
 
   useEffect(() => {
     marcarEnViaje(true);
     return () => marcarEnViaje(false);
-  }, []);
+  }, [marcarEnViaje]);
 
   if (!envio || !fase || !destinoActual) {
-    return (
+    return error ? (
+      <ErrorTracking />
+    ) : (
       <div className="flex flex-1 items-center justify-center bg-slate-50">
         <div className="w-10 h-10 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
       </div>
@@ -67,10 +62,10 @@ export default function NavegacionViajePage({
     distanciaAlDestino <= DISTANCIA_MAXIMA_CONFIRMACION_KM;
 
   const handleConfirmar = async () => {
-    await confirmarPaso();
+    const nuevoEstado = await confirmarPaso();
 
     // Si era el paso de entrega, el ciclo terminó -> volver al radar
-    if (fase === "HACIA_ENTREGA") {
+    if (nuevoEstado === "ENTREGADO") {
       setMostrarModalEntrega(true);
     }
   };

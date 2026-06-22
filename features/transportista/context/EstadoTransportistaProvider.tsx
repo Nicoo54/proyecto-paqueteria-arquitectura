@@ -1,8 +1,15 @@
 "use client";
 
-import { Ubicacion } from "@/shared/types/ubicacion";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Coordenada } from "../viaje/types";
+import { useApiClient } from "@/shared/api-client";
+import { disponibilidadService } from "../services/trackeoService";
 
 interface EstadoTransportistaContextType {
   isOnline: boolean;
@@ -21,6 +28,7 @@ export function EstadoTransportistaProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const { apiFetch } = useApiClient();
   const [isOnline, setIsOnline] = useState(false);
   const [enViaje, setEnViaje] = useState(false);
   const [gpsHabilitado, setGpsHabilitado] = useState(false);
@@ -41,7 +49,7 @@ export function EstadoTransportistaProvider({
         setGpsHabilitado(habilitado);
         if (!habilitado) {
           setIsOnline(false);
-          // TODO: avisar al backend que pasó a offline (PATCH estado transportista)
+          disponibilidadService.actualizarDisponibilidad(false, apiFetch);
         }
       };
     });
@@ -57,11 +65,16 @@ export function EstadoTransportistaProvider({
 
     const watchId = navigator.geolocation.watchPosition(
       (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
         setUbicacion({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
+          lat: lat,
+          lng: lng,
         });
-        // TODO: enviar ubicación al backend
+        disponibilidadService.actualizarUbicacion(
+          { latitud: lat, longitud: lng },
+          apiFetch,
+        );
       },
       (error) => {
         console.error("Error obteniendo ubicación:", error);
@@ -78,7 +91,7 @@ export function EstadoTransportistaProvider({
 
     if (isOnline) {
       setIsOnline(false);
-      // TODO: avisar al backend que está offline
+      disponibilidadService.actualizarDisponibilidad(false, apiFetch);
       return;
     }
 
@@ -90,7 +103,11 @@ export function EstadoTransportistaProvider({
         });
         setGpsHabilitado(true);
         setIsOnline(true);
-        // TODO: avisar al backend que está online + enviar ubicación inicial
+        disponibilidadService.actualizarDisponibilidad(true, apiFetch);
+        disponibilidadService.actualizarUbicacion(
+          { latitud: pos.coords.latitude, longitud: pos.coords.longitude },
+          apiFetch,
+        );
       },
       () => {
         alert(
@@ -103,10 +120,10 @@ export function EstadoTransportistaProvider({
     );
   };
 
-  const marcarEnViaje = (activo: boolean) => {
+  const marcarEnViaje = useCallback((activo: boolean) => {
     setEnViaje(activo);
     if (activo) setIsOnline(true);
-  };
+  }, []);
 
   return (
     <EstadoTransportistaContext.Provider

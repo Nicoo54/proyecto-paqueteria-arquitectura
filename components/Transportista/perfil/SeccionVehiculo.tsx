@@ -6,13 +6,8 @@ import { TarjetaInfoPerfil } from "./TarjetaInfoPerfil";
 import { TarjetaEdicionPerfil } from "./TarjetaEdicionPerfil";
 import { BotonesAccionFormulario } from "./BotonesAccionFormulario";
 import SelectorVehiculo from "@/components/Onboarding/SelectorVehiculo";
-
-// TODO: Extraer a constantes
-const EMOJI_POR_CATEGORIA: Record<string, string> = {
-  BICI: "🚲",
-  MOTO: "🛵",
-  AUTO: "🚗",
-};
+import { CategoriaVehiculo } from "@/lib/api-contract";
+import { CONFIG_VEHICULOS } from "@/features/landing/context/onboardingContent";
 
 interface Props {
   isEditing: boolean;
@@ -20,14 +15,14 @@ interface Props {
   onCancelar: () => void;
   onSubmit: (e: React.FormEvent) => void;
   isSaving: boolean;
-  categoriaActual?: string;
-  patenteActual?: string;
-  categoria: string;
-  onCambioCategoria: (categoria: string) => void;
+  categoriaActual?: CategoriaVehiculo;
+  patenteActual?: string | null;
+  categoria: CategoriaVehiculo;
+  onCambioCategoria: (categoria: CategoriaVehiculo) => void;
   patente: string;
   setPatente: (v: string) => void;
   errorPatente: string | null;
-  validarPatente: (valor: string, categoria: string) => void;
+  validarPatente: (valor: string, categoria: CategoriaVehiculo) => void;
 }
 
 export function SeccionVehiculo({
@@ -54,7 +49,9 @@ export function SeccionVehiculo({
       >
         <div className="bg-linear-to-br from-slate-50 to-slate-100 border border-slate-100 p-4 rounded-2xl flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-2xl shadow-sm shrink-0">
-            {categoriaActual ? EMOJI_POR_CATEGORIA[categoriaActual] : "🚗"}
+            {categoriaActual
+              ? CONFIG_VEHICULOS.find((v) => v.id === categoriaActual)?.icon
+              : "🚗"}
           </div>
           <div className="min-w-0">
             <p className="font-black text-slate-900 text-base">

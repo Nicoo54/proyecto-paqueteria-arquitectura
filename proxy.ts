@@ -4,6 +4,7 @@ import {
   createRouteMatcher,
 } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { edgeAuthService } from "./lib/auth";
 
 const isPublicRoute = createRouteMatcher(["/", "/onboarding(.*)"]);
 
@@ -25,19 +26,29 @@ const ROL_REQUERIDO: Record<string, string> = {
 export default clerkMiddleware(async (auth, req) => {
   const { userId, redirectToSignIn } = await auth();
   const pathname = req.nextUrl.pathname;
-
+  const path = req.nextUrl.pathname;
   // Caso 1. No logueado: rutas públicas pasan, el resto va al login
   if (!userId) {
     if (isPublicRoute(req)) return;
     return redirectToSignIn();
   }
 
+  // Permitir pasar a las rutas de API sin importar el estado del onboarding,
+  // para que el frontend pueda usarlas para completar el proceso
+  if (
+    path.startsWith("/api/remitentes") ||
+    path.startsWith("/api/transportistas") ||
+    path.startsWith("/api/usuarios/me/status")
+  ) {
+    return NextResponse.next();
+  }
+
   const user = await clerkClient.users.getUser(userId);
   const rol = (user.publicMetadata?.role as string) ?? "remitente";
-  // Cambiar a true si se quiere acceder a la pag de cada usuario
-  // al implementar backend no tocar.
-  const onboardingCompleto =
-    (user.publicMetadata?.onboardingCompleto as boolean) ?? true;
+
+  // Esto esta feo. Debe obtenerse por metadatos de clerk pero
+  // no se están seteando bien al parecer. Por eso por ahora se consulta a la DB directamente.
+  const { onboardingCompleto } = await edgeAuthService.obtenerStatus(req);
 
   // Caso 2. Onboarding incompleto → solo puede estar en /onboarding o /
   if (!onboardingCompleto) {

@@ -6,12 +6,16 @@ export const ActualizarUbicacionSchema = z.object({
   lat: LatSchema,
   lng: LngSchema,
 });
-export type ActualizarUbicacionInput = z.infer<typeof ActualizarUbicacionSchema>;
+export type ActualizarUbicacionInput = z.infer<
+  typeof ActualizarUbicacionSchema
+>;
 
 export const ActualizarDisponibilidadSchema = z.object({
   disponible: z.boolean(),
 });
-export type ActualizarDisponibilidadInput = z.infer<typeof ActualizarDisponibilidadSchema>;
+export type ActualizarDisponibilidadInput = z.infer<
+  typeof ActualizarDisponibilidadSchema
+>;
 
 export const VehiculoRequestSchema = z
   .object({
@@ -29,6 +33,9 @@ export const HistorialEnviosQuerySchema = PaginacionSchema;
 export const ExplorarEnviosQuerySchema = z.object({
   lat: z.coerce.number().pipe(LatSchema),
   lng: z.coerce.number().pipe(LngSchema),
-  radioKm: z.coerce.number().int().min(1).max(50).default(5),
+  // No estoy en bahia, es para probar si funciona. Dsp limitar a 50km
+  radioKm: z.coerce.number().int().min(1).max(500).default(5),
 });
-export type ExplorarEnviosQueryInput = z.infer<typeof ExplorarEnviosQuerySchema>;
+export type ExplorarEnviosQueryInput = z.infer<
+  typeof ExplorarEnviosQuerySchema
+>;

@@ -2,8 +2,10 @@ import { useState } from "react";
 import { onboardingService } from "../services/onboardingService";
 import { useValidarDni } from "./useValidarDni";
 import { useValidarPatente } from "./useValidarPatente";
+import { useApiClient } from "@/shared/api-client";
 
 export function useOnboardingTransportista(onExito: () => void) {
+  const { apiFetch } = useApiClient();
   const [dni, setDni] = useState("");
   const [categoria, setCategoria] = useState("");
   const [patente, setPatente] = useState("");
@@ -51,12 +53,15 @@ export function useOnboardingTransportista(onExito: () => void) {
 
     setIsSubmitting(true);
     try {
-      await onboardingService.registrarTransportista({
-        dni,
-        categoria,
-        patente,
-        aliasBancario,
-      });
+      await onboardingService.registrarTransportista(
+        {
+          dni,
+          categoria,
+          patente,
+          aliasBancario,
+        },
+        apiFetch,
+      );
       onExito();
     } catch {
       setErrorGeneral("Ocurrió un error. Intentá de nuevo.");

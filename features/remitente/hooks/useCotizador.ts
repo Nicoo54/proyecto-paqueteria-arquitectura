@@ -3,13 +3,14 @@ import { useRouter } from "next/navigation";
 import { Ubicacion } from "@/shared/types/ubicacion";
 import { CotizacionResponse } from "../types/cotizacion";
 import { cotizacionService } from "../services/cotizacionService";
+import { useApiClient } from "@/shared/api-client";
 
 export function useCotizador(
   origen: Ubicacion | null,
   destino: Ubicacion | null,
 ) {
   const router = useRouter();
-
+  const { apiFetch } = useApiClient();
   const [origenTexto, setOrigenTexto] = useState("");
   const [destinoTexto, setDestinoTexto] = useState("");
   const [tamanoSeleccionado, setTamanoSeleccionado] = useState<string>("S");
@@ -24,11 +25,14 @@ export function useCotizador(
     setIsCotizando(true);
     setCotizacion(null);
     try {
-      const resultado = await cotizacionService.cotizarEnvio({
-        origen,
-        destino,
-        tamano: tamanoSeleccionado,
-      });
+      const resultado = await cotizacionService.cotizarEnvio(
+        {
+          origen,
+          destino,
+          tamano: tamanoSeleccionado,
+        },
+        apiFetch,
+      );
       setCotizacion(resultado);
     } catch (error) {
       console.error("Error al cotizar:", error);

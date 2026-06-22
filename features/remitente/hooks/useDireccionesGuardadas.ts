@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { direccionesService } from "../services/direccionesService";
 import { DireccionGuardada } from "../types/direccione";
+import { useApiClient } from "@/shared/api-client";
 
 export function useDireccionesGuardadas() {
+  const { apiFetch } = useApiClient();
   const [direcciones, setDirecciones] = useState<DireccionGuardada[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -12,7 +14,7 @@ export function useDireccionesGuardadas() {
   useEffect(() => {
     let isMounted = true;
     direccionesService
-      .obtenerDirecciones()
+      .obtenerDirecciones(apiFetch)
       .then((data) => {
         if (isMounted) setDirecciones(data);
       })

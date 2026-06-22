@@ -4,8 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookmarkPlus, MapPin } from "lucide-react";
 import dynamic from "next/dynamic";
-
-// Agregamos Map y Marker
 import Map, { Marker } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useAgregarDireccion } from "@/features/remitente/hooks/useAgregarDireccion";

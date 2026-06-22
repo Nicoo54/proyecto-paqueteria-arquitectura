@@ -48,8 +48,8 @@ export default function PerfilDashboardPage() {
         <PerfilHeader
           nombre={user?.fullName || "Conductor Registrado"}
           imageUrl={user?.imageUrl}
-          promedioCalificacion={perfilOriginal?.promedio_calificacion}
-          cantidadResenas={perfilOriginal?.cantidad_resenas}
+          promedioCalificacion={perfilOriginal?.promedioCalificacion}
+          cantidadResenas={perfilOriginal?.cantidadResenas}
         />
 
         {mensaje && (
@@ -81,8 +81,8 @@ export default function PerfilDashboardPage() {
           onCancelar={cancelarVehiculo}
           onSubmit={guardarVehiculo}
           isSaving={isSaving}
-          categoriaActual={perfilOriginal?.categoria}
-          patenteActual={perfilOriginal?.patente}
+          categoriaActual={perfilOriginal?.vehiculo?.categoria}
+          patenteActual={perfilOriginal?.vehiculo?.patente}
           categoria={categoria}
           onCambioCategoria={handleCambioCategoria}
           patente={patente}
@@ -97,7 +97,7 @@ export default function PerfilDashboardPage() {
           onCancelar={cancelarCobro}
           onSubmit={guardarCobro}
           isSaving={isSaving}
-          aliasActual={perfilOriginal?.alias_bancario}
+          aliasActual={perfilOriginal?.aliasBancario}
           aliasBancario={aliasBancario}
           setAliasBancario={setAliasBancario}
           errorAlias={errorAlias}

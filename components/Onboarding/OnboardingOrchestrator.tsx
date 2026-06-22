@@ -13,13 +13,6 @@ export function OnboardingOrchestrator() {
   const rol = searchParams.get("role") as RolOnboarding | null;
   const { isLoaded, isSignedIn } = useUser();
 
-  // El middleware ya valida que el rol sea correcto,
-  // pero por si acaso alguien llega sin él
-  if (isLoaded && (!rol || !["remitente", "transportista"].includes(rol))) {
-    router.replace("/");
-    return null;
-  }
-
   if (!isLoaded) {
     return <Spinner mensaje="Verificando sesión..." />;
   }

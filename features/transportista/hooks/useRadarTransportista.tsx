@@ -1,19 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useEstadoTransportista } from "../context/EstadoTransportistaProvider";
 import { PaqueteDisponible } from "../types/types";
-import { fetchPaquetesDisponibles, fetchViajeActivo } from "../mocks";
+import { radarService } from "../services/radarService";
+import { useApiClient } from "@/shared/api-client";
 
 export function useRadarTransportista() {
-  const { isOnline } = useEstadoTransportista();
-
+  const router = useRouter();
+  const { isOnline, ubicacion } = useEstadoTransportista();
+  const { apiFetch } = useApiClient();
+  // Estados de carga inicial
   const [isLoading, setIsLoading] = useState(false);
   const [viajeActivo, setViajeActivo] = useState<{ id: string } | null>(null);
   const [paquetes, setPaquetes] = useState<PaqueteDisponible[]>([]);
+  const [radioKm, setRadioKm] = useState(5);
+
+  // Estados de interacción del usuario
+  const [paqueteSeleccionado, setPaqueteSeleccionado] =
+    useState<PaqueteDisponible | null>(null);
+  const [isAccepting, setIsAccepting] = useState(false);
 
   useEffect(() => {
-    if (!isOnline) {
+    // Si se desconecta o apaga el GPS, limpiamos todo
+    if (!isOnline || !ubicacion) {
       setPaquetes([]);
       setViajeActivo(null);
       return;
@@ -23,19 +34,32 @@ export function useRadarTransportista() {
     setIsLoading(true);
 
     const inicializarRadar = async () => {
-      const viaje = await fetchViajeActivo();
-      if (!isMounted) return;
+      try {
+        // 1. PRIMERO: Buscamos si hay un viaje activo en curso
+        const viaje = await radarService.obtenerViajeActivo(apiFetch);
+        if (!isMounted) return;
 
-      if (viaje) {
-        setViajeActivo(viaje);
-        setIsLoading(false);
-        return;
-      }
+        if (viaje) {
+          setViajeActivo(viaje);
+          setIsLoading(false);
+          return;
+        }
 
-      const disponibles = await fetchPaquetesDisponibles();
-      if (isMounted) {
-        setPaquetes(disponibles);
-        setIsLoading(false);
+        // 2. SEGUNDO: Si NO hay viaje activo, buscamos paquetes en el radar
+        setViajeActivo(null);
+
+        const disponibles = await radarService.obtenerPaquetesDisponibles(
+          ubicacion.lat,
+          ubicacion.lng,
+          radioKm,
+          apiFetch,
+        );
+
+        if (isMounted) setPaquetes(disponibles);
+      } catch (error) {
+        console.error("Error en el radar:", error);
+      } finally {
+        if (isMounted) setIsLoading(false);
       }
     };
 
@@ -44,7 +68,32 @@ export function useRadarTransportista() {
     return () => {
       isMounted = false;
     };
-  }, [isOnline]);
+  }, [isOnline, ubicacion?.lat, ubicacion?.lng, radioKm, apiFetch]);
 
-  return { isOnline, isLoading, viajeActivo, paquetes };
+  const handleAceptarViaje = async () => {
+    if (!paqueteSeleccionado) return;
+
+    setIsAccepting(true);
+    try {
+      await radarService.aceptarViaje(paqueteSeleccionado.id, apiFetch);
+      router.push(`/transportista/viaje/${paqueteSeleccionado.id}`);
+    } catch (error) {
+      console.error("Error al aceptar el viaje", error);
+    } finally {
+      setIsAccepting(false);
+    }
+  };
+
+  return {
+    isOnline,
+    isLoading,
+    viajeActivo,
+    paquetes,
+    paqueteSeleccionado,
+    setPaqueteSeleccionado,
+    isAccepting,
+    handleAceptarViaje,
+    radioKm,
+    setRadioKm,
+  };
 }

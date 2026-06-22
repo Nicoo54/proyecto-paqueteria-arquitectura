@@ -1,32 +1,37 @@
 import { useRouter } from "next/navigation";
 import { Navigation, ArrowRight } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export function VistaViajeActivo({ viajeId }: { viajeId: string }) {
   const router = useRouter();
 
   return (
-    <div className="flex-1 flex flex-col p-4 sm:p-8 bg-slate-100 items-center justify-center">
-      <Card className="w-full max-w-md border-amber-200 shadow-xl overflow-hidden rounded-3xl animate-in zoom-in-95">
-        <div className="bg-amber-400 p-6 text-center">
-          <Navigation className="w-12 h-12 text-slate-900 mx-auto mb-3 animate-bounce" />
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-            ¡Tenés un viaje en curso!
+    <div className="flex-1 flex flex-col items-center justify-center p-4 bg-slate-100">
+      <div className="w-full max-w-sm bg-slate-900 rounded-3xl overflow-hidden border border-slate-800">
+        <div className="px-6 py-8 text-center border-b border-slate-800">
+          <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
+            <Navigation className="w-7 h-7 text-amber-500" />
+          </div>
+          <p className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2">
+            Viaje en curso
+          </p>
+          <h2 className="text-xl font-bold text-slate-100 leading-snug mb-2">
+            Estás en medio de una entrega
           </h2>
-          <p className="text-amber-900 font-medium mt-1">
-            No podés aceptar nuevos pedidos.
+          <p className="text-sm text-slate-500">
+            No podés aceptar nuevos pedidos hasta completarla.
           </p>
         </div>
-        <CardContent className="p-6 text-center">
+
+        <div className="p-5">
           <Button
             onClick={() => router.push(`/transportista/viaje/${viajeId}`)}
-            className="w-full h-14 text-lg font-bold bg-slate-900 text-white hover:bg-slate-800 rounded-xl"
+            className="w-full h-13 text-base font-bold bg-amber-400 text-slate-900 hover:bg-amber-500 rounded-2xl"
           >
-            Volver al mapa <ArrowRight className="w-5 h-5 ml-2" />
+            Ir al mapa <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

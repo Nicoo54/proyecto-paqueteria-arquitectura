@@ -13,7 +13,6 @@ import {
   Activity,
   CloudSun,
   Navigation,
-  Star,
 } from "lucide-react";
 
 import { useDetalleEnvio } from "@/features/remitente/hooks/useDetalleEnvio";
@@ -30,7 +29,6 @@ export default function DetalleHistorialPage({
   const router = useRouter();
 
   const { envio, isLoading, error } = useDetalleEnvio(id);
-
   if (isLoading) {
     return (
       <div className="flex h-[50vh] items-center justify-center w-full">
@@ -166,7 +164,7 @@ export default function DetalleHistorialPage({
                     Costo Abonado
                   </span>
                   <p className="font-black text-slate-900 text-base mt-0.5">
-                    ${envio.costo.toFixed(2)} ARS
+                    ${envio.costo} ARS
                   </p>
                 </div>
               </div>

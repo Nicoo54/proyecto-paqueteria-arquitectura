@@ -1,12 +1,16 @@
+"use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { calificacionService } from "../services/calificacionService";
+import { useApiClient } from "@/shared/api-client";
 
 export function useCalificacion(
   codigoEnvio: string,
-  resenaPrevia?: { puntaje: number; comentario?: string },
+  resenaPrevia?: { puntaje: number; comentario?: string | null },
 ) {
   const router = useRouter();
+  const { apiFetch } = useApiClient();
 
   const [yaCalificado, setYaCalificado] = useState(!!resenaPrevia);
   const [puntaje, setPuntaje] = useState(resenaPrevia?.puntaje || 0);
@@ -22,11 +26,14 @@ export function useCalificacion(
 
     setIsSubmitting(true);
     try {
-      await calificacionService.enviarResena({
-        codigo_seguimiento: codigoEnvio,
-        puntaje,
-        comentario,
-      });
+      await calificacionService.enviarResena(
+        codigoEnvio,
+        {
+          puntaje,
+          comentario: comentario.trim() !== "" ? comentario.trim() : undefined,
+        },
+        apiFetch,
+      );
 
       setYaCalificado(true);
 
