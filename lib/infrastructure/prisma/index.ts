@@ -5,5 +5,7 @@ export * from "./prisma-vehiculo-repository";
 export * from "./prisma-envio-repository";
 export * from "./prisma-transaccion-repository";
 export * from "./prisma-usuario-repository";
+export * from "./prisma-zona-caliente-repository";
+export * from "./prisma-metrica-repository";
 export * from "./prisma-unit-of-work";
 export * from "./prisma-distributed-lock";
