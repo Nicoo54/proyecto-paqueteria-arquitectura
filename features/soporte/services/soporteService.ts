@@ -8,9 +8,11 @@ export const soporteService = {
   },
 
   async tomarTicket(id: string, apiFetch: ApiFetch): Promise<void> {
-    console.warn("tomarTicket", id);
     await apiFetch(`/api/tickets/${id}`, {
       method: "PATCH",
+      body: JSON.stringify({
+        estado: "EN_ATENCION",
+      }),
     });
   },
 };
