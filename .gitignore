@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel
+.env*.local
+
+# local file for development
+estructura.md
+# clerk configuration (can include secrets)
+/.clerk/

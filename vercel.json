@@ -1,0 +1,6 @@
+{
+  "crons": [
+    { "path": "/api/jobs/analitica-nocturna", "schedule": "0 2 * * *" },
+    { "path": "/api/jobs/liquidacion", "schedule": "0 3 * * *" }
+  ]
+}
